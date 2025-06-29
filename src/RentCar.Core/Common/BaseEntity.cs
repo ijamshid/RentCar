@@ -1,4 +1,4 @@
-﻿namespace RentalHome.Core.Common;
+﻿namespace RentCar.Core.Common;
 
 public abstract class BaseEntity
 {
