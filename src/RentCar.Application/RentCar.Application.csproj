@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RentCar.DataAccess\RentCar.DataAccess.csproj" />
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.6" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\RentCar.DataAccess\RentCar.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
