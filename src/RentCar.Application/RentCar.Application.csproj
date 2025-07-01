@@ -13,8 +13,10 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
-    <Folder Include="Services\" />
-    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RentCar.DataAccess\RentCar.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
