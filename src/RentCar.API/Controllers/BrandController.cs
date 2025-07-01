@@ -41,7 +41,7 @@ namespace RentCar.API.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update( int id, [FromBody] UpdateBrandDto dto)
+        public IActionResult Update(int id, [FromBody] UpdateBrandDto dto)
         {
             if (id != dto.Id)
             {

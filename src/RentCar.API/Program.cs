@@ -1,7 +1,9 @@
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RentCar.Application;
 using RentCar.DataAccess;
 using System.Text;
 using System.Threading.RateLimiting;
@@ -39,7 +41,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddDataAccess(builder.Configuration);
+builder.Services.AddDataAccess(builder.Configuration).AddApplication();
 
 IConfiguration config = builder.Configuration;
 
