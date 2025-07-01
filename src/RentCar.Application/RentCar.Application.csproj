@@ -10,4 +10,9 @@
     <ProjectReference Include="..\RentCar.DataAccess\RentCar.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>
