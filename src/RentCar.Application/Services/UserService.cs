@@ -15,15 +15,12 @@ public class UserService : IUserService
     private readonly DatabaseContext _context;
     private readonly IMapper _mapper;
     private readonly IMemoryCache _cache;
-    private readonly MemoryCacheEntryOptions _cacheOptions;
 
     public UserService(DatabaseContext context, IMapper mapper, IMemoryCache cache)
     {
         _context = context;
         _mapper = mapper;
         _cache = cache;
-        _cacheOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(TimeSpan.FromMinutes(5)); // 5 daqiqa cache
     }
 
     public async Task<IEnumerable<UserGetDto>> GetAllAsync()
@@ -33,8 +30,9 @@ public class UserService : IUserService
 
         var users = await _context.Users.ToListAsync();
         var result = _mapper.Map<IEnumerable<UserGetDto>>(users);
-
-        _cache.Set("users", result, _cacheOptions);
+        var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+        _cache.Set("users", result, cacheOptions);
         return result;
     }
   
@@ -49,7 +47,9 @@ public class UserService : IUserService
         if (user == null) return null;
 
         var result = _mapper.Map<UserGetDto>(user);
-        _cache.Set(cacheKey, result, _cacheOptions);
+        var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+        _cache.Set(cacheKey, result, cacheOptions);
         return result;
     }
 
@@ -58,7 +58,7 @@ public class UserService : IUserService
         var user = _mapper.Map<User>(dto);
 
         // Password hashing (masalan, BCrypt ishlatish mumkin)
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        user.PasswordHash = "s"; //BCrypt.Net.BCrypt.HashPassword(dto.Password);
         user.IsActive = true;
 
         _context.Users.Add(user);

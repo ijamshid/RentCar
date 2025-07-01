@@ -14,7 +14,6 @@ namespace RentCar.Application.Services
         private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
-        private readonly MemoryCacheEntryOptions _cacheOptions;
 
         public RatingService(DatabaseContext context, IMapper mapper, IMemoryCache cache)
         {
@@ -22,9 +21,9 @@ namespace RentCar.Application.Services
             _mapper = mapper;
             _cache = cache;
 
-            _cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+           
         }
+
 
         public async Task<IEnumerable<RatingGetDto>> GetAllAsync()
         {
@@ -35,8 +34,10 @@ namespace RentCar.Application.Services
 
             var ratings = await _context.Ratings.ToListAsync();
             var result = _mapper.Map<IEnumerable<RatingGetDto>>(ratings);
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
 
-            _cache.Set(cacheKey, result, _cacheOptions);
+            _cache.Set(cacheKey, result, cacheOptions);
 
             return result;
         }
@@ -53,8 +54,9 @@ namespace RentCar.Application.Services
                 return null;
 
             var result = _mapper.Map<RatingGetDto>(rating);
-
-            _cache.Set(cacheKey, result, _cacheOptions);
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+            _cache.Set(cacheKey, result, cacheOptions);
 
             return result;
         }

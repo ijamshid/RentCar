@@ -18,7 +18,7 @@ namespace RentCar.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var brands = await _brandService.GetAll();
+            var brands = await _brandService.GetAllAsync();
             return Ok(brands);
         }
 
