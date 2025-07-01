@@ -1,12 +1,6 @@
 ﻿using AutoMapper;
 using RentCar.Application.DTOs;
 using RentCar.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RentCar.Application.Mapping
 {
@@ -18,6 +12,10 @@ namespace RentCar.Application.Mapping
             CreateMap<UserCreateDto, User>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()); // password hash controllerda qilamiz
             CreateMap<UserUpdateDto, User>();
+
+            CreateMap<CarCreateDto, Car>();
+            CreateMap<Car, CarGetDto>();
+            CreateMap<CarUpdateDto, Car>();
         }
     }
 }
