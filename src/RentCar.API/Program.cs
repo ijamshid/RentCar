@@ -8,6 +8,11 @@ using RentCar.DataAccess;
 using System.Text;
 using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
+
+builder.Services.AddHealthChecks();
+
 
 // Add services to the container.
 
@@ -94,6 +99,9 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+
+app.UseHealthChecks("/health");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
