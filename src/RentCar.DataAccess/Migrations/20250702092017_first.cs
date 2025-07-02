@@ -70,7 +70,6 @@ namespace RentCar.DataAccess.Migrations
                     firstname = table.Column<string>(type: "text", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
                     address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    salt = table.Column<string>(type: "text", nullable: false),
                     refresh_token = table.Column<string>(type: "text", nullable: true),
                     date_of_birth = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
@@ -302,8 +301,8 @@ namespace RentCar.DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "users",
-                columns: new[] { "id", "address", "date_of_birth", "email", "firstname", "is_active", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
-                values: new object[] { 1, "123 Admin Lane", new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@carrental.com", "Jamshid", true, "Ismoilov", "h2q2T2u9Z8x4V5c1B0N7m6L5k4J3i2H1g0F9e8D7c6B5a4S3q2W1e0R9t8Y7u6I5o4P3a2S1d0F9g8H7j6K5l4Z3x2C1v0B9n8M7", "555-123-4567", null, "k5j4h3g2f1e0d9c8b7a6s5q4w3e2r1t0y9u8i7o6p5a4s3d2f1g0h9j8k7l6z5x4c3v2b1n0m9q8w7e6r5t4y3u2i1o0p9a8s7d6f5g4h3j2k1l0" });
+                columns: new[] { "id", "address", "date_of_birth", "email", "firstname", "is_active", "lastname", "password_hash", "phone_number", "refresh_token" },
+                values: new object[] { 1, "123 Admin Lane", new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@carrental.com", "Jamshid", true, "Ismoilov", "h2q2T2u9Z8x4V5c1B0N7m6L5k4J3i2H1g0F9e8D7c6B5a4S3q2W1e0R9t8Y7u6I5o4P3a2S1d0F9g8H7j6K5l4Z3x2C1v0B9n8M7", "555-123-4567", null });
 
             migrationBuilder.InsertData(
                 table: "role_permissions",

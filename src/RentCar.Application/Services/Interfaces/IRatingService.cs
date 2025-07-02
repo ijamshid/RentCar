@@ -1,0 +1,14 @@
+﻿using RentCar.Application.DTOs;
+
+namespace RentCar.Application.Services.Interfaces
+{
+
+    public interface IRatingService
+    {
+        Task<IEnumerable<RatingGetDto>> GetAllAsync();
+        Task<RatingGetDto> GetByIdAsync(int id);
+        Task<RatingGetDto> CreateAsync(RatingCreateDto dto);
+        Task<bool> UpdateAsync(RatingUpdateDto dto);
+        Task<bool> DeleteAsync(int id);
+    }
+}

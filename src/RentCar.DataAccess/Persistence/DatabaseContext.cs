@@ -88,7 +88,6 @@ public class DatabaseContext : DbContext
                 Lastname = "Ismoilov",
                 Email = "admin@carrental.com",
                 PasswordHash = adminPasswordHashBase64,
-                Salt = adminSaltBase64,
                 PhoneNumber = "555-123-4567",
                 Address = "123 Admin Lane",
                 DateOfBirth = new DateTime(1980, 1, 1, 0, 0, 0, DateTimeKind.Utc),
