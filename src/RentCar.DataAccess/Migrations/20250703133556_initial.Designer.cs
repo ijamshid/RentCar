@@ -12,8 +12,8 @@ using RentCar.DataAccess.Persistence;
 namespace RentCar.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250702092017_first")]
-    partial class first
+    [Migration("20250703133556_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -715,6 +715,11 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnType("text")
                         .HasColumnName("refresh_token");
 
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("salt");
+
                     b.HasKey("Id")
                         .HasName("pk_users");
 
@@ -736,7 +741,8 @@ namespace RentCar.DataAccess.Migrations
                             IsActive = true,
                             Lastname = "Ismoilov",
                             PasswordHash = "h2q2T2u9Z8x4V5c1B0N7m6L5k4J3i2H1g0F9e8D7c6B5a4S3q2W1e0R9t8Y7u6I5o4P3a2S1d0F9g8H7j6K5l4Z3x2C1v0B9n8M7",
-                            PhoneNumber = "555-123-4567"
+                            PhoneNumber = "555-123-4567",
+                            Salt = "k5j4h3g2f1e0d9c8b7a6s5q4w3e2r1t0y9u8i7o6p5a4s3d2f1g0h9j8k7l6z5x4c3v2b1n0m9q8w7e6r5t4y3u2i1o0p9a8s7d6f5g4h3j2k1l0"
                         });
                 });
 

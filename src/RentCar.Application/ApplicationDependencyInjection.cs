@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Services;
 using RentCar.Application.Services.Interfaces;
+using SecureLoginApp.Application.Helpers.GenerateJwt;
 
 namespace RentCar.Application
 {
@@ -14,6 +16,8 @@ namespace RentCar.Application
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICarService, CarService>();
             services.AddScoped<IBrandService, BrandService>();
+            services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
+
 
 
             // Memory Cache
