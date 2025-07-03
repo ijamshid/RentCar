@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.Extensions.Caching.Memory;
 using RentCar.Application.DTOs;
+using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
@@ -15,13 +16,17 @@ public class UserService : IUserService
     private readonly DatabaseContext _context;
     private readonly IMapper _mapper;
     private readonly IMemoryCache _cache;
+    private readonly IJwtTokenHandler _jwtTokenHandler;
 
-    public UserService(DatabaseContext context, IMapper mapper, IMemoryCache cache)
+    public UserService(DatabaseContext context, IMapper mapper, IMemoryCache cache, IJwtTokenHandler jwtTokenHandler)
     {
         _context = context;
         _mapper = mapper;
         _cache = cache;
+        _jwtTokenHandler = jwtTokenHandler;
     }
+
+
 
     public async Task<IEnumerable<UserGetDto>> GetAllAsync()
     {

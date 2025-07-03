@@ -20,7 +20,7 @@ namespace RentCar.Application
             services.AddMemoryCache();
 
             // AutoMapper — agar mapping profillar shu assembly ichida bo‘lsa
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());         
 
             return services;
         }

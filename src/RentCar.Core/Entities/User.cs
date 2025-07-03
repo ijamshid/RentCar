@@ -5,6 +5,7 @@ namespace RentCar.Core.Entities;
 public class User : BaseEntity
 {
     public string PasswordHash { get; set; } = null!;
+    public string Salt { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string? PhoneNumber { get; set; }
     public string Lastname { get; set; } = null!;
