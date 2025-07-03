@@ -1,8 +1,0 @@
-[build]
-builder = "dockerfile"
-dockerfilePath = "./RentCar/Dockerfile"
-
-[deploy]
-startCommand = "dotnet RentCar.API.dll"
-restartPolicy = "always"
-healthcheckPath = "/health"
