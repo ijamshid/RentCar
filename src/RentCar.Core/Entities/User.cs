@@ -12,7 +12,6 @@ public class User : BaseEntity
     public bool IsActive { get; set; } = true;
     public string Address { get; set; }
 
-    public string Salt { get; set; }
     public string? RefreshToken { get; set; }
     // Navigation properties
     public ICollection<Reservation> Reservations { get; set; }

@@ -1,6 +1,5 @@
 ﻿using RentCar.Core.Common;
 using RentCar.Core.Enums;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace RentCar.Core.Entities;
 
