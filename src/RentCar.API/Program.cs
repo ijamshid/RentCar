@@ -10,8 +10,8 @@ using RentCar.DataAccess.Persistence;
 using System.Text;
 using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
-//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-//builder.WebHost.UseUrls($"http://*:{port}");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
 
 builder.Services.AddHealthChecks();
 
@@ -103,17 +103,20 @@ builder.Services.AddCors(options =>
 //    options.ListenAnyIP(8080); // HTTPS kerak emas
 //});
 
-var app = builder.Build();
+
 
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsProduction() && builder.Configuration.GetValue<int?>("PORT") is not null)
+if (builder.Environment.IsProduction() && builder.Configuration.GetValue<int?>("PORT") is not null)
     builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
-
-var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
-await context.Database.MigrateAsync();
-
+var app = builder.Build();
+// Migratsiya
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    await context.Database.MigrateAsync();
+}
 
 app.UseSwagger();
 app.UseSwaggerUI();
