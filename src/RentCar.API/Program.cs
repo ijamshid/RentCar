@@ -1,15 +1,17 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RentCar.Application;
 using RentCar.DataAccess;
+using RentCar.DataAccess.Persistence;
 using System.Text;
 using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://*:{port}");
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//builder.WebHost.UseUrls($"http://*:{port}");
 
 builder.Services.AddHealthChecks();
 
@@ -101,14 +103,19 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 
-app.UseHealthChecks("/health");
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+if (app.Environment.IsProduction() && builder.Configuration.GetValue<int?>("PORT") is not null)
+    builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
+
+var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
+await context.Database.MigrateAsync();
+
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// end
 
 app.UseHttpsRedirection();
 
