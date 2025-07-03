@@ -12,8 +12,8 @@ using RentCar.DataAccess.Persistence;
 namespace RentCar.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250703135239_first")]
-    partial class first
+    [Migration("20250703192821_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
