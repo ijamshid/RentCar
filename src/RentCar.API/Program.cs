@@ -99,13 +99,13 @@ builder.Services.AddCors(options =>
                    .AllowAnyOrigin();
         });
 });
-
-var app = builder.Build();
-
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ListenAnyIP(8080); // HTTPS kerak emas
 });
+
+var app = builder.Build();
+
 
 
 // Configure the HTTP request pipeline.
