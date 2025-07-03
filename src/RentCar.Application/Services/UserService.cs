@@ -40,7 +40,7 @@ public class UserService : IUserService
         _cache.Set("users", result, cacheOptions);
         return result;
     }
-  
+
 
     public async Task<UserGetDto> GetByIdAsync(int id)
     {

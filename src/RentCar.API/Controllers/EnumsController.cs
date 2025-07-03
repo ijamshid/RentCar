@@ -8,6 +8,7 @@ namespace RentCar.API.Controllers
     [ApiController]
     public class EnumsController : ControllerBase
     {
+        [HttpGet]
         public ActionResult<List<SelectListItemDto>> GetEnumSelectList([FromQuery] string enumName)
         {
             Type? enumType = enumName switch

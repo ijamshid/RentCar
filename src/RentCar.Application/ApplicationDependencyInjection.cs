@@ -16,7 +16,7 @@ namespace RentCar.Application
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICarService, CarService>();
             services.AddScoped<IBrandService, BrandService>();
-            services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
+           services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
 
 
 
