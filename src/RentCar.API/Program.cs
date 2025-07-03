@@ -65,9 +65,9 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = config["Jwt:Issuer"],
-        ValidAudience = config["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
+        ValidIssuer = config["JwtOption:Issuer"],
+        ValidAudience = config["JwtOption:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtOption:Key"]))
     };
 });
 
@@ -95,8 +95,7 @@ builder.Services.AddCors(options =>
         {
             builder.AllowAnyOrigin()
                    .AllowAnyMethod()
-                   .AllowAnyHeader()
-                   .AllowAnyOrigin();
+                   .AllowAnyHeader();
         });
 });
 builder.WebHost.ConfigureKestrel(options =>
@@ -121,7 +120,7 @@ app.UseSwaggerUI();
 
 // end
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("AllowAllOrigins");
 
