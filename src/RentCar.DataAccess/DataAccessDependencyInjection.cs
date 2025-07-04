@@ -24,7 +24,7 @@ public static class DataAccessDependencyInjection
             options.UseNpgsql(connectionString, opt =>
             {
                 opt.MigrationsAssembly(typeof(DatabaseContext).Assembly.FullName);
-                opt.EnableRetryOnFailure(3, TimeSpan.FromSeconds(10), null); // Retry policy qo‘shildi
+                opt.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null); // Retry policy qo‘shildi
             })
             .UseSnakeCaseNamingConvention()
         );

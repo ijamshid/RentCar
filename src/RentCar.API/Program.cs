@@ -114,9 +114,17 @@ var app = builder.Build();
 // Migratsiya
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-    await context.Database.MigrateAsync();
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        await context.Database.MigrateAsync();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Migration failed.");
+    }
 }
+
 
 app.UseSwagger();
 app.UseSwaggerUI();
