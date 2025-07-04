@@ -1,6 +1,6 @@
 ﻿using RentCar.Application.DTOs;
 
-namespace RentCar.Application.Services
+namespace RentCar.Application.Services.Interfaces
 {
     public interface IBrandService
     {
