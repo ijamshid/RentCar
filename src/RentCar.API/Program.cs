@@ -131,7 +131,7 @@ app.UseSwaggerUI();
 
 // end
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseCors("AllowAllOrigins");
 
