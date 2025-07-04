@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using RentCar.Application.DTOs;
-using RentCar.Application.Services;
+using RentCar.Application.Services.Interfaces;
 
 namespace RentCar.API.Controllers
 {

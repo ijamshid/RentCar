@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using RentCar.Application.DTOs;
+using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
 
