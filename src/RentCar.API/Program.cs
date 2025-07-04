@@ -13,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
 
-builder.Services.AddHealthChecks();
 
 
 // Add services to the container.
@@ -108,8 +107,9 @@ builder.Services.AddCors(options =>
 
 
 // Configure the HTTP request pipeline.
-if (builder.Environment.IsProduction() && builder.Configuration.GetValue<int?>("PORT") is not null)
-    builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
+//if (builder.Environment.IsProduction() && builder.Configuration.GetValue<int?>("PORT") is not null)
+  //
+  //builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
 var app = builder.Build();
 // Migratsiya
 using (var scope = app.Services.CreateScope())
@@ -131,7 +131,7 @@ app.UseSwaggerUI();
 
 // end
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("AllowAllOrigins");
 
