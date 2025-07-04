@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using RentCar.Application.Helpers.GenerateJWT;
+using RentCar.Application.Helpers.PasswordHashers;
 using RentCar.Application.Services;
 using RentCar.Application.Services.Interfaces;
 using SecureLoginApp.Application.Helpers.GenerateJwt;
@@ -17,6 +18,11 @@ namespace RentCar.Application
             services.AddScoped<ICarService, CarService>();
             services.AddScoped<IBrandService, BrandService>();
            services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IOtpService, OtpService>();
+
+
 
 
 
