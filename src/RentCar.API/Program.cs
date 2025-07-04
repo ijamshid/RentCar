@@ -10,10 +10,9 @@ using RentCar.DataAccess.Persistence;
 using System.Text;
 using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
-//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-//builder.WebHost.UseUrls($"http://*:{port}");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
 
-builder.Services.AddHealthChecks();
 
 
 // Add services to the container.
@@ -98,21 +97,33 @@ builder.Services.AddCors(options =>
                    .AllowAnyHeader();
         });
 });
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(8080); // HTTPS kerak emas
-});
+//builder.WebHost.ConfigureKestrel(options =>
+//{
+//    options.ListenAnyIP(8080); // HTTPS kerak emas
+//});
 
-var app = builder.Build();
+
 
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsProduction() && builder.Configuration.GetValue<int?>("PORT") is not null)
-    builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
-
-var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
-await context.Database.MigrateAsync();
+//if (builder.Environment.IsProduction() && builder.Configuration.GetValue<int?>("PORT") is not null)
+  //
+  //builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
+var app = builder.Build();
+// Migratsiya
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        await context.Database.MigrateAsync();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Migration failed.");
+    }
+}
 
 
 app.UseSwagger();
