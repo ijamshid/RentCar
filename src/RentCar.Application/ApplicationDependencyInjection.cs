@@ -17,7 +17,7 @@ namespace RentCar.Application
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICarService, CarService>();
             services.AddScoped<IBrandService, BrandService>();
-           services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
+            services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IOtpService, OtpService>();
@@ -30,7 +30,7 @@ namespace RentCar.Application
             services.AddMemoryCache();
 
             // AutoMapper — agar mapping profillar shu assembly ichida bo‘lsa
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());         
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;
         }
