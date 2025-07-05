@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RentCar.Core.Enums
+﻿namespace RentCar.Core.Enums
 {
     public enum PaymentMethod
     {

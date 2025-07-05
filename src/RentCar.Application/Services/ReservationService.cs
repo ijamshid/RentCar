@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using RentCar.Application.DTOs;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
+using RentCar.Core.Enums;
 using RentCar.DataAccess.Persistence;
 
 namespace RentCar.Application.Services
@@ -70,7 +71,24 @@ namespace RentCar.Application.Services
 
         public async Task<ReservationGetDto> CreateAsync(ReservationCreateDto dto)
         {
+            var car = await _context.Cars.FindAsync(dto.CarId);
+            var days = (dto.ReturnDate - dto.PickupDate).Days;
+            var total = days * car.DailyPrice;
+
             var reservation = _mapper.Map<Reservation>(dto);
+
+            reservation.TotalPrice = total;
+            reservation.CreatedAt = DateTime.UtcNow;
+            reservation.Status = ReservationStatus.Pending;
+            reservation.Payment = new Payment
+            {
+                Amount = total,
+                Status = PaymentStatus.Pending,
+                PaymentMethod = PaymentMethod.Cash, // Default payment method
+                TransactionId = Guid.NewGuid().ToString(), // Generate a unique transaction ID
+                PaymentDate = DateTime.UtcNow
+            };
+
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
