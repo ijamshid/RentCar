@@ -37,7 +37,7 @@ public class UserService : IUserService
         _authService = auth;
     }
 
-    public async Task<ApiResult<string>> RegisterAsync(string firstname,string lastname, string email, string password, bool isAdminSite)
+    public async Task<ApiResult<string>> RegisterAsync(string firstname,string lastname, string email, string password, bool isAdminSite, string a, DateTime b)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (existingUser != null)
@@ -52,8 +52,10 @@ public class UserService : IUserService
             Lastname = lastname,
             Email = email,
             PasswordHash = hash,
+            DateOfBirth = b,
+            PhoneNumber = a,
             Salt = salt,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             IsVerified = false // Yangi foydalanuvchilar odatda tasdiqlanmagan holda boshlanadi
         };
 
@@ -126,7 +128,7 @@ public class UserService : IUserService
             return ApiResult<string>.Failure(new[] { "Foydalanuvchi topilmadi." });
 
         var otp = await _otpService.GetLatestOtpAsync(user.Id, model.Code);
-        if (otp is null || otp.ExpiredAt < DateTime.Now)
+        if (otp is null || otp.ExpiredAt < DateTime.UtcNow)
             return ApiResult<string>.Failure(new[] { "Kod noto‘g‘ri yoki muddati tugagan." });
 
         user.IsVerified = true;

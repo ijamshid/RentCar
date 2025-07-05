@@ -28,50 +28,60 @@ public class DatabaseContext : DbContext
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(builder);
 
-        // Roles
-        builder.Entity<Role>().HasData(
-            new Role { Id = 1, Name = "Admin", Description = "Administrator role with full access" },
-            new Role { Id = 2, Name = "Customer", Description = "Default role for regular users" },
-            new Role { Id = 3, Name = "Staff", Description = "Staff role for managing cars and reservations" }
-        );
+        //// Roles
+        //builder.Entity<Role>().HasData(
+        //    new Role { Id = 1, Name = "Admin", Description = "Administrator role with full access" },
+        //    new Role { Id = 2, Name = "Customer", Description = "Default role for regular users" },
+        //    new Role { Id = 3, Name = "Staff", Description = "Staff role for managing cars and reservations" }
+        //);
 
-        // Permissions
-        builder.Entity<Permission>().HasData(
-            new Permission { Id = 1, Name = "ViewCars", Description = "View car listings" , ShortName = "VC" },
-            new Permission { Id = 2, Name = "ManageCars", Description = "Create, edit, delete cars", ShortName = "MC" },
-            new Permission { Id = 3, Name = "ViewUsers", Description = "View user profiles", ShortName = "VU" },
-            new Permission { Id = 4, Name = "ManageUsers", Description = "Create, edit, delete users", ShortName = "MU" },
-            new Permission { Id = 5, Name = "CreateReservation", Description = "Create new reservations" , ShortName = "CR" },
-            new Permission { Id = 6, Name = "ViewReservations", Description = "View reservation details", ShortName = "VR" },
-            new Permission { Id = 7, Name = "ManageReservations", Description = "Update, cancel, complete reservations" , ShortName = "MR" },
-            new Permission { Id = 8, Name = "ProcessPayments", Description = "Process and manage payments", ShortName = "PP" },
-            new Permission { Id = 9, Name = "ViewRatings", Description = "View car ratings" , ShortName = "VR" },
-            new Permission { Id = 10, Name = "CreateRating", Description = "Create new ratings", ShortName = "CR" },
-            new Permission { Id = 11, Name = "ManageBrands", Description = "Create, edit, delete car brands" , ShortName = "MB" },
-            new Permission { Id = 12, Name = "UploadImages", Description = "Upload and manage car images", ShortName = "UI" }
-        );
+        //// Permissions
+        //builder.Entity<Permission>().HasData(
+        //    new Permission { Id = 1, Name = "ViewCars", Description = "View car listings", ShortName = "VC" },
+        //    new Permission { Id = 2, Name = "ManageCars", Description = "Create, edit, delete cars", ShortName = "MC" },
+        //    new Permission { Id = 3, Name = "ViewUsers", Description = "View user profiles", ShortName = "VU" },
+        //    new Permission { Id = 4, Name = "ManageUsers", Description = "Create, edit, delete users", ShortName = "MU" },
+        //    new Permission { Id = 5, Name = "CreateReservation", Description = "Create new reservations", ShortName = "CR" },
+        //    new Permission { Id = 6, Name = "ViewReservations", Description = "View reservation details", ShortName = "VR" },
+        //    new Permission { Id = 7, Name = "ManageReservations", Description = "Update, cancel, complete reservations", ShortName = "MR" },
+        //    new Permission { Id = 8, Name = "ProcessPayments", Description = "Process and manage payments", ShortName = "PP" },
+        //    new Permission { Id = 9, Name = "ViewRatings", Description = "View car ratings", ShortName = "VR" },
+        //    new Permission { Id = 10, Name = "CreateRating", Description = "Create new ratings", ShortName = "CR" },
+        //    new Permission { Id = 11, Name = "ManageBrands", Description = "Create, edit, delete car brands", ShortName = "MB" },
+        //    new Permission { Id = 12, Name = "UploadImages", Description = "Upload and manage car images", ShortName = "UI" }
+        //);
 
-        // Role-Permission Assignments
-        List<RolePermission> rolePermissions = new List<RolePermission>();
-        for (int i = 1; i <= 12; i++)
-        {
-            rolePermissions.Add(new RolePermission { RoleId = 1, PermissionId = i }); // Admin gets all
-        }
-        rolePermissions.Add(new RolePermission { RoleId = 2, PermissionId = 1 });
-        rolePermissions.Add(new RolePermission { RoleId = 2, PermissionId = 5 });
-        rolePermissions.Add(new RolePermission { RoleId = 2, PermissionId = 6 });
-        rolePermissions.Add(new RolePermission { RoleId = 2, PermissionId = 9 });
-        rolePermissions.Add(new RolePermission { RoleId = 2, PermissionId = 10 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 1 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 2 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 3 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 6 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 7 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 8 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 9 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 11 });
-        rolePermissions.Add(new RolePermission { RoleId = 3, PermissionId = 12 });
-        builder.Entity<RolePermission>().HasData(rolePermissions);
+   //     builder.Entity<RolePermission>().HasData(
+ //            new RolePermission { RoleId = 1, PermissionId = 1 },
+ //            new RolePermission { RoleId = 1, PermissionId = 2 },
+ //            new RolePermission { RoleId = 1, PermissionId = 3 },
+ //            new RolePermission { RoleId = 1, PermissionId = 4 },
+ //            new RolePermission { RoleId = 1, PermissionId = 5 },
+ //            new RolePermission { RoleId = 1, PermissionId = 6 },
+ //            new RolePermission { RoleId = 1, PermissionId = 7 },
+ //            new RolePermission { RoleId = 1, PermissionId = 8 },
+ //            new RolePermission { RoleId = 1, PermissionId = 9 },
+ //            new RolePermission { RoleId = 1, PermissionId = 10 },
+ //            new RolePermission { RoleId = 1, PermissionId = 11 },
+ //            new RolePermission { RoleId = 1, PermissionId = 12 },
+             
+ //            new RolePermission { RoleId = 2, PermissionId = 1 },
+ //            new RolePermission { RoleId = 2, PermissionId = 5 },
+ //            new RolePermission { RoleId = 2, PermissionId = 6 },
+ //            new RolePermission { RoleId = 2, PermissionId = 9 },
+ //            new RolePermission { RoleId = 2, PermissionId = 10 },
+             
+ //            new RolePermission { RoleId = 3, PermissionId = 1 },
+ //            new RolePermission { RoleId = 3, PermissionId = 2 },
+ //            new RolePermission { RoleId = 3, PermissionId = 3 },
+ //            new RolePermission { RoleId = 3, PermissionId = 6 },
+ //            new RolePermission { RoleId = 3, PermissionId = 7 },
+ //            new RolePermission { RoleId = 3, PermissionId = 8 },
+ //            new RolePermission { RoleId = 3, PermissionId = 9 },
+ //            new RolePermission { RoleId = 3, PermissionId = 11 },
+ //            new RolePermission { RoleId = 3, PermissionId = 12 }
+ //);
+
 
 
         // Admin User Seed Data
@@ -92,14 +102,13 @@ public class DatabaseContext : DbContext
                 PasswordHash = adminPasswordHashBase64,
                 Salt = adminSaltBase64,
                 PhoneNumber = "555-123-4567",
-                Address = "123 Admin Lane",
                 DateOfBirth = new DateTime(1980, 1, 1, 0, 0, 0, DateTimeKind.Utc),
                 IsActive = true
             }
         );
-        //Assign Admin Role to Primary Admin User
-        builder.Entity<UserRole>().HasData(
-             new UserRole { UserId = 1, RoleId = 1 } // Link Primary Admin (Id 1) to Admin Role (Id 1)
-         );
+        ////Assign Admin Role to Primary Admin User
+        //builder.Entity<UserRole>().HasData(
+        //     new UserRole { UserId = 1, RoleId = 1 } // Link Primary Admin (Id 1) to Admin Role (Id 1)
+        // );
     }
 }

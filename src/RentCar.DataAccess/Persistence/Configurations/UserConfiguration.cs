@@ -23,8 +23,6 @@ namespace RentCar.DataAccess.Persistence.Configurations;
             builder.Property(u => u.PhoneNumber)
                 .HasMaxLength(20);
 
-            builder.Property(u => u.Address)
-                .HasMaxLength(500);
 
             builder.Property(u => u.DateOfBirth); // Nullable DateTime
 
@@ -32,7 +30,7 @@ namespace RentCar.DataAccess.Persistence.Configurations;
             .IsRequired();
 
         builder.Property(u => u.CreatedAt)
-    .HasDefaultValueSql("NOW()");
+    .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
         // Configure relationships
         builder.HasMany(u => u.Reservations)

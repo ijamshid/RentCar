@@ -23,7 +23,7 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
             .HasMaxLength(50);
         builder.Property(p => p.PaymentDate)
              .IsRequired()
-             .HasDefaultValueSql("NOW()");
+             .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
         builder.Property(p => p.PaymentMethod)
             .HasMaxLength(100);
 

@@ -22,7 +22,7 @@ namespace RentCar.API.Controllers
 
         public async Task<ApiResult<string>> RegisterAsync([FromBody] RegisterUserModel model)
         {
-            var result = await _userService.RegisterAsync(model.FirstName, model.LastName,model.Email, model.Password, model.isAdminSite);
+            var result = await _userService.RegisterAsync(model.FirstName, model.LastName,model.Email, model.Password, model.isAdminSite, model.PhoneNumber, model.DateOfBirth);
             return result;
         }
 

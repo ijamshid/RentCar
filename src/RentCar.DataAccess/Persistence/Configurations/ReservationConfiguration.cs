@@ -15,11 +15,11 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
 
         // --- CHANGE FOR LOCAL TIMEZONE (timestamp without time zone) ---
         builder.Property(r => r.PickupDate)
-            .HasColumnType("timestamp without time zone") // Explicitly set for local time
+            .HasColumnType("timestamp with time zone") // Explicitly set for local time
             .IsRequired();
 
         builder.Property(r => r.ReturnDate)
-            .HasColumnType("timestamp without time zone") // Explicitly set for local time
+            .HasColumnType("timestamp with time zone") // Explicitly set for local time
             .IsRequired();
         // --- END CHANGE ---
 
@@ -31,10 +31,10 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
             .HasConversion<string>() // Store enum as string
             .HasMaxLength(50);
 
-        builder.Property(u => u.CreatedAt).HasDefaultValueSql("NOW()")
+        builder.Property(u => u.CreatedAt).HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'")
             .IsRequired();
 
-        builder.Property(r => r.LastModifiedAt).HasDefaultValueSql("NOW()"); // Nullable DateTime
+        builder.Property(r => r.LastModifiedAt).HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'"); // Nullable DateTime
 
         // Relationships are configured in CarConfiguration and UserConfiguration for clarity
         // Also explicitly configure the one-to-one relationship with Payment

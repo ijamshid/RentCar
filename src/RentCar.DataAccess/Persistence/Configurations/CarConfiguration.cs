@@ -43,7 +43,7 @@ namespace RentCar.DataAccess.Persistence.Configurations
 
 
             builder.Property(u => u.CreatedAt)
-            .HasDefaultValueSql("NOW()")
+            .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'")
             .IsRequired();
 
             // Configure relationships

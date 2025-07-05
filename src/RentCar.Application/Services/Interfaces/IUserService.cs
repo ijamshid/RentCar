@@ -12,7 +12,7 @@ namespace RentCar.Application.Services.Interfaces
         Task<UserGetDto> CreateAsync(UserCreateDto dto);
         Task<bool> UpdateAsync(UserUpdateDto dto);
         Task<bool> DeleteAsync(int id);
-        Task<ApiResult<string>> RegisterAsync(string firstname, string lastname, string email, string password, bool isAdminSite);
+        Task<ApiResult<string>> RegisterAsync(string firstname, string lastname, string email, string password, bool isAdminSite, string a, DateTime b);
         Task<ApiResult<LoginResponseModel>> LoginAsync(LoginUserModel model);
         Task<ApiResult<string>> VerifyOtpAsync(OtpVerificationModel model);
         Task<ApiResult<UserAuthResponseModel>> GetUserAuth();

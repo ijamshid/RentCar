@@ -71,6 +71,8 @@ namespace RentCar.Application.Services
         public async Task<ReservationGetDto> CreateAsync(ReservationCreateDto dto)
         {
             var reservation = _mapper.Map<Reservation>(dto);
+            reservation.PickupDate = reservation.PickupDate.ToUniversalTime();
+            reservation.ReturnDate = reservation.ReturnDate.ToUniversalTime();
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
