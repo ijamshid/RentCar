@@ -14,8 +14,9 @@ namespace RentCar.API.Controllers
             Type? enumType = enumName switch
             {
                 "FuelType" => typeof(FuelType),
-                "PaymentSatus" => typeof(PaymentStatus),
+                "PaymentStatus" => typeof(PaymentStatus),
                 "ReservationStatus" => typeof(ReservationStatus),
+                "PaymentMethod" => typeof(PaymentMethod),
                 _ => null
             };
 

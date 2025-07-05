@@ -9,7 +9,7 @@ public class Payment:BaseEntity
     public int ReservationId { get; set; } // Foreign key to Reservation
     public decimal Amount { get; set; }
     public PaymentStatus Status { get; set; }
-    public string PaymentMethod { get; set; }
+    public PaymentMethod PaymentMethod { get; set; }
     public string TransactionId { get; set; }
     public DateTime PaymentDate { get; set; }
 

@@ -5,6 +5,7 @@ using RentCar.Application.DTOs;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
+using System.Xml.Linq;
 
 namespace RentCar.Application.Services
 {
@@ -53,6 +54,40 @@ namespace RentCar.Application.Services
             var cars = await _context.Cars
                 .Include(c => c.Brand)
                 .ToListAsync();
+
+            var result = _mapper.Map<IEnumerable<CarGetDto>>(cars);
+
+            var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+
+            _cache.Set(cacheKey, result, cacheOptions);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<CarGetDto>> GetByBrand(string brand)
+        {
+            const string cacheKey = "brand_cars";
+
+            if (_cache.TryGetValue(cacheKey, out IEnumerable<CarGetDto> cachedCars))
+                return cachedCars;
+
+            if (string.IsNullOrWhiteSpace(brand))
+            {
+                throw new Exception("Brand name cannot be null or empty.");
+            }
+
+            var trimmedName = brand.Trim().ToUpper();
+
+            var cars = await _context.Cars
+                .Where(c => EF.Functions.Like(c.Brand.Name.ToUpper(), $"%{trimmedName}%"))
+                .ToListAsync();
+
+            if (cars.Count == 0)
+            {
+                throw new KeyNotFoundException($"No cars found for brand '{brand}'.");
+            }
+
 
             var result = _mapper.Map<IEnumerable<CarGetDto>>(cars);
 
