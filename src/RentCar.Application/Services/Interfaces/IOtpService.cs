@@ -1,8 +1,12 @@
-﻿namespace RentCar.Application.Services.Interfaces
+﻿using SecureLoginApp.Core.Entities;
+
+namespace RentCar.Application.Services.Interfaces
 {
     public interface IOtpService
     {
-        Task<string> GenerateOtpAsync(string email);
+        Task<string> GenerateOtpAsync(int userId);
         bool ValidateOtp(string email, string code);
+        Task<UserOTPs?> GetLatestOtpAsync(int userId, string code);
+
     }
 }

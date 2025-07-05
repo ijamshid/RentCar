@@ -1,17 +1,51 @@
-﻿using RentCar.Application.Services.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using RentCar.Application.Services.Interfaces;
+using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
+using SecureLoginApp.Core.Entities;
 
 namespace RentCar.Application.Services
 {
     public class OtpService : IOtpService
     {
         private static readonly Dictionary<string, (string Code, DateTime Expires)> _otps = new();
+        private readonly DatabaseContext context;
+        private readonly IEmailService emailService;
 
-        public Task<string> GenerateOtpAsync(string email)
+        public OtpService(DatabaseContext context, IEmailService emailService)
         {
-            var code = new Random().Next(100000, 999999).ToString();
-            _otps[email] = (code, DateTime.UtcNow.AddMinutes(10));
-            return Task.FromResult(code);
+            this.context = context;
+            this.emailService = emailService;
+        }
+        public async Task<string> GenerateOtpAsync(int userId)
+        {
+            var user = await context.Users.FindAsync(userId);
+            if (user == null)
+                throw new Exception("User not found");
+
+            var otpCode = new Random().Next(100000, 999999).ToString();
+
+            var otp = new UserOTPs
+            {
+                UserId = userId,
+                Code = otpCode,
+                CreatedAt = DateTime.Now,
+                ExpiredAt = DateTime.Now.AddMinutes(5)
+            };
+
+            await context.UserOTPs.AddAsync(otp);
+            await context.SaveChangesAsync();
+
+            await emailService.SendOtpAsync(user.Email, otpCode);
+            return otpCode;
+        }
+
+        public async Task<UserOTPs?> GetLatestOtpAsync(int userId, string code)
+        {
+            return await context.UserOTPs
+                .Where(o => o.UserId == userId && o.Code == code && o.ExpiredAt > DateTime.Now)
+                .OrderByDescending(o => o.CreatedAt)
+                .FirstOrDefaultAsync();
         }
 
         public bool ValidateOtp(string email, string code)

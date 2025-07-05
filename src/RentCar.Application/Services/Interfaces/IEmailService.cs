@@ -2,6 +2,6 @@
 {
     public interface IEmailService
     {
-        Task SendOtpAsync(string email, string otpCode);
+        Task<bool> SendOtpAsync(string toEmail, string otp);
     }
 }

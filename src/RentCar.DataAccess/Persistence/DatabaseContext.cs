@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RentCar.Core.Entities;
+using SecureLoginApp.Core.Entities;
 using System.Reflection;
 namespace RentCar.DataAccess.Persistence;
 
@@ -7,6 +8,7 @@ public class DatabaseContext : DbContext
 {
     public DatabaseContext(DbContextOptions options) : base(options)
     { }
+    public DbSet<UserOTPs> UserOTPs { get; set; }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Brand> Brands { get; set; }
@@ -35,18 +37,18 @@ public class DatabaseContext : DbContext
 
         // Permissions
         builder.Entity<Permission>().HasData(
-            new Permission { Id = 1, Name = "ViewCars", Description = "View car listings" },
-            new Permission { Id = 2, Name = "ManageCars", Description = "Create, edit, delete cars" },
-            new Permission { Id = 3, Name = "ViewUsers", Description = "View user profiles" },
-            new Permission { Id = 4, Name = "ManageUsers", Description = "Create, edit, delete users" },
-            new Permission { Id = 5, Name = "CreateReservation", Description = "Create new reservations" },
-            new Permission { Id = 6, Name = "ViewReservations", Description = "View reservation details" },
-            new Permission { Id = 7, Name = "ManageReservations", Description = "Update, cancel, complete reservations" },
-            new Permission { Id = 8, Name = "ProcessPayments", Description = "Process and manage payments" },
-            new Permission { Id = 9, Name = "ViewRatings", Description = "View car ratings" },
-            new Permission { Id = 10, Name = "CreateRating", Description = "Create new ratings" },
-            new Permission { Id = 11, Name = "ManageBrands", Description = "Create, edit, delete car brands" },
-            new Permission { Id = 12, Name = "UploadImages", Description = "Upload and manage car images" }
+            new Permission { Id = 1, Name = "ViewCars", Description = "View car listings" , ShortName = "VC" },
+            new Permission { Id = 2, Name = "ManageCars", Description = "Create, edit, delete cars", ShortName = "MC" },
+            new Permission { Id = 3, Name = "ViewUsers", Description = "View user profiles", ShortName = "VU" },
+            new Permission { Id = 4, Name = "ManageUsers", Description = "Create, edit, delete users", ShortName = "MU" },
+            new Permission { Id = 5, Name = "CreateReservation", Description = "Create new reservations" , ShortName = "CR" },
+            new Permission { Id = 6, Name = "ViewReservations", Description = "View reservation details", ShortName = "VR" },
+            new Permission { Id = 7, Name = "ManageReservations", Description = "Update, cancel, complete reservations" , ShortName = "MR" },
+            new Permission { Id = 8, Name = "ProcessPayments", Description = "Process and manage payments", ShortName = "PP" },
+            new Permission { Id = 9, Name = "ViewRatings", Description = "View car ratings" , ShortName = "VR" },
+            new Permission { Id = 10, Name = "CreateRating", Description = "Create new ratings", ShortName = "CR" },
+            new Permission { Id = 11, Name = "ManageBrands", Description = "Create, edit, delete car brands" , ShortName = "MB" },
+            new Permission { Id = 12, Name = "UploadImages", Description = "Upload and manage car images", ShortName = "UI" }
         );
 
         // Role-Permission Assignments

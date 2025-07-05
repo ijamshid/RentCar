@@ -1,9 +1,6 @@
 ﻿using RentCar.Application.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using RentCar.Application.Helpers.GenerateJWT;
+using RentCar.Application.Models.Users;
 
 namespace RentCar.Application.Services.Interfaces
 {
@@ -15,5 +12,9 @@ namespace RentCar.Application.Services.Interfaces
         Task<UserGetDto> CreateAsync(UserCreateDto dto);
         Task<bool> UpdateAsync(UserUpdateDto dto);
         Task<bool> DeleteAsync(int id);
+        Task<ApiResult<string>> RegisterAsync(string firstname, string lastname, string email, string password, bool isAdminSite);
+        Task<ApiResult<LoginResponseModel>> LoginAsync(LoginUserModel model);
+        Task<ApiResult<string>> VerifyOtpAsync(OtpVerificationModel model);
+        Task<ApiResult<UserAuthResponseModel>> GetUserAuth();
     }
 }

@@ -4,10 +4,10 @@ using Microsoft.Extensions.Caching.Memory;
 using RentCar.Application.DTOs;
 using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Helpers.PasswordHashers;
+using RentCar.Application.Models.Users;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace RentCar.Application.Services;
 
@@ -21,9 +21,11 @@ public class UserService : IUserService
     private readonly IPasswordHasher _passwordHasher;
     private readonly IEmailService _emailService;
     private readonly IOtpService _otpService;
+    private readonly IAuthService _authService;
+
 
     public UserService(DatabaseContext context, IMapper mapper, IMemoryCache cache, IJwtTokenHandler jwtTokenHandler,
-        IPasswordHasher hasher, IEmailService email, IOtpService otp)
+        IPasswordHasher hasher, IEmailService email, IOtpService otp, IAuthService auth)
     {
         _context = context;
         _mapper = mapper;
@@ -32,11 +34,10 @@ public class UserService : IUserService
         _passwordHasher = hasher;
         _emailService = email;
         _otpService = otp;
+        _authService = auth;
     }
 
-
-    //Registration and Login
-    public async Task<ApiResult<string>> RegisterAsync(string fullname, string email, string password, bool isAdminSite)
+    public async Task<ApiResult<string>> RegisterAsync(string firstname,string lastname, string email, string password, bool isAdminSite)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (existingUser != null)
@@ -45,10 +46,6 @@ public class UserService : IUserService
         var salt = Guid.NewGuid().ToString();
         var hash = _passwordHasher.Encrypt(password, salt);
 
-        var nameParts = fullname.Split(' ', 2);
-        string firstname = nameParts[0];
-        string lastname = nameParts.Length > 1 ? nameParts[1] : "";
-
         var user = new User
         {
             Firstname = firstname,
@@ -56,90 +53,106 @@ public class UserService : IUserService
             Email = email,
             PasswordHash = hash,
             Salt = salt,
-            IsActive = false,
             CreatedAt = DateTime.Now,
+            IsVerified = false // Yangi foydalanuvchilar odatda tasdiqlanmagan holda boshlanadi
         };
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        var roleName = isAdminSite ? "Admin" : "User";
-        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+        // --- Rolni isAdminSite ga qarab belgilash ---
+        string roleName = isAdminSite ? "Admin" : "User";
+        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
 
-        if (role == null)
+        if (defaultRole == null)
         {
+            // Agar kerakli rol topilmasa, xato qaytaramiz
             return ApiResult<string>.Failure(new[] { $"Tizimda '{roleName}' roli topilmadi. Admin bilan bog'laning." });
         }
 
         _context.UserRoles.Add(new UserRole
         {
             UserId = user.Id,
-            RoleId = role.Id
+            RoleId = defaultRole.Id
         });
         await _context.SaveChangesAsync();
+        // --- Rolni belgilash qismi tugadi ---
 
-        var otp = await _otpService.GenerateOtpAsync(user.Email);
-        await _emailService.SendOtpAsync(user.Email, otp);
+        var otp = await _otpService.GenerateOtpAsync(user.Id);
+        await _emailService.SendOtpAsync(email, otp);
 
         return ApiResult<string>.Success("Ro'yxatdan o'tdingiz. Email orqali tasdiqlang.");
     }
 
-    public async Task<ApiResult<AuthResponse>> VerifyOtpAsync(string email, string otpCode)
+    public async Task<ApiResult<LoginResponseModel>> LoginAsync(LoginUserModel model)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (user == null)
-            return ApiResult<AuthResponse>.Failure(new[] { "Foydalanuvchi topilmadi" });
+        var user = await _context.Users
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Email == model.Email);
 
-        if (!_otpService.ValidateOtp(email, otpCode))
-            return ApiResult<AuthResponse>.Failure(new[] { "Noto‘g‘ri yoki muddati o‘tgan kod" });
+        if (user is null)
+            return ApiResult<LoginResponseModel>.Failure(new[] { "Foydalanuvchi topilmadi" });
 
-        user.IsActive = true;
-        await _context.SaveChangesAsync();
+        if (!_passwordHasher.Verify(user.PasswordHash, model.Password, user.Salt))
+            return ApiResult<LoginResponseModel>.Failure(new[] { "Parol noto‘g‘ri" });
 
-        var token = _jwtTokenHandler.GenerateAccessToken(user, Guid.NewGuid().ToString());
+        if (!user.IsVerified)
+            return ApiResult<LoginResponseModel>.Failure(new[] { "Email tasdiqlanmagan" });
+
+        var accessToken = _jwtTokenHandler.GenerateAccessToken(user, Guid.NewGuid().ToString());
         var refreshToken = _jwtTokenHandler.GenerateRefreshToken();
 
-        user.RefreshToken = refreshToken;
-        await _context.SaveChangesAsync();
-
-        var response = new AuthResponse
+        return ApiResult<LoginResponseModel>.Success(new LoginResponseModel
         {
             Email = user.Email,
-            Fullname = $"{user.Firstname} {user.Lastname}",
-            Token = token,
-            RefreshToken = refreshToken
-        };
-
-        return ApiResult<AuthResponse>.Success(response);
+            FirstName = user.Firstname,
+            LastName = user.Lastname,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList(),
+            Permissions = user.UserRoles
+                 .SelectMany(ur => ur.Role.RolePermissions)
+                 .Select(p => p.Permission.ShortName)
+                 .Distinct()
+                 .ToList()
+        });
     }
 
-    public async Task<ApiResult<AuthResponse>> LoginAsync(string email, string password)
+    public async Task<ApiResult<string>> VerifyOtpAsync(OtpVerificationModel model)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (user == null || !user.IsActive)
-            return ApiResult<AuthResponse>.Failure(new[] { "Email yoki parol noto‘g‘ri" });
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+        if (user is null)
+            return ApiResult<string>.Failure(new[] { "Foydalanuvchi topilmadi." });
 
-        var isCorrect = _passwordHasher.Verify(password, user.Salt, user.PasswordHash);
-        if (!isCorrect)
-            return ApiResult<AuthResponse>.Failure(new[] { "Email yoki parol noto‘g‘ri" });
+        var otp = await _otpService.GetLatestOtpAsync(user.Id, model.Code);
+        if (otp is null || otp.ExpiredAt < DateTime.Now)
+            return ApiResult<string>.Failure(new[] { "Kod noto‘g‘ri yoki muddati tugagan." });
 
-        var token = _jwtTokenHandler.GenerateAccessToken(user, Guid.NewGuid().ToString());
-        var refreshToken = _jwtTokenHandler.GenerateRefreshToken();
-        user.RefreshToken = refreshToken;
+        user.IsVerified = true;
         await _context.SaveChangesAsync();
 
-        var response = new AuthResponse
-        {
-            Email = user.Email,
-            Fullname = $"{user.Firstname} {user.Lastname}",
-            Token = token,
-            RefreshToken = refreshToken
-        };
-
-        return ApiResult<AuthResponse>.Success(response);
+        return ApiResult<string>.Success("OTP muvaffaqiyatli tasdiqlandi.");
     }
 
-    //User CRUD
+    public async Task<ApiResult<UserAuthResponseModel>> GetUserAuth()
+    {
+        if (_authService.User == null)
+        {
+            return ApiResult<UserAuthResponseModel>.Failure(new List<string> { "User not found" });
+        }
+
+        UserAuthResponseModel userPermissions = new UserAuthResponseModel
+        {
+            Id = _authService.User.Id,
+            FullName = _authService.User.FullName,
+            Permissions = _authService.User.Permissions
+        };
+
+        return ApiResult<UserAuthResponseModel>.Success(userPermissions);
+    }
+
+
 
     public async Task<IEnumerable<UserGetDto>> GetAllAsync()
     {
@@ -216,4 +229,6 @@ public class UserService : IUserService
 
         return true;
     }
+
+   
 }
