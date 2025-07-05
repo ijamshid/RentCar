@@ -100,6 +100,64 @@ namespace RentCar.Application.Services
             return result;
         }
 
+        public async Task<bool> ConfirmReservationAsync(int reservationId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Payment)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            if (reservation == null || reservation.Status != ReservationStatus.Pending)
+                return false;
+
+            reservation.Status = ReservationStatus.Confirmed;
+            reservation.LastModifiedAt = DateTime.UtcNow;
+            reservation.Payment.Status = PaymentStatus.Completed;
+            reservation.Payment.PaymentDate = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> CancelReservationAsync(int reservationId)
+        {
+            var reservation = await _context.Reservations.FindAsync(reservationId);
+
+            if (reservation == null || reservation.Status != ReservationStatus.Pending)
+                return false;
+
+            reservation.Status = ReservationStatus.Cancelled;
+            reservation.LastModifiedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> CompleteReservationAsync(int reservationId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Car)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            if (reservation == null || reservation.Status != ReservationStatus.Confirmed)
+                return false;
+
+            var now = DateTime.UtcNow;
+            if (now > reservation.ReturnDate)
+            {
+                var hoursLate = (now - reservation.ReturnDate).TotalHours;
+                var penalty = Math.Ceiling(hoursLate) * 5; // 5 per hour
+                reservation.TotalPrice += (decimal)penalty;
+                reservation.Status = ReservationStatus.Completed;
+            }
+            else
+            {
+                reservation.Status = ReservationStatus.Completed;
+            }
+
+            reservation.LastModifiedAt = now;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> UpdateAsync(ReservationUpdateDto dto)
         {
             var reservation = await _context.Reservations.FindAsync(dto.Id);
