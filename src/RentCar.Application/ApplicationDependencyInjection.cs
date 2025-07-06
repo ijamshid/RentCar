@@ -2,6 +2,7 @@
 using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Helpers.PasswordHashers;
 using RentCar.Application.Services;
+using RentCar.Application.Services.Impl;
 using RentCar.Application.Services.Interfaces;
 using SecureLoginApp.Application.Helpers.GenerateJwt;
 
@@ -17,10 +18,12 @@ namespace RentCar.Application
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICarService, CarService>();
             services.AddScoped<IBrandService, BrandService>();
-           services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
+            services.AddScoped<IJwtTokenHandler, JwtTokenHandler>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddHttpContextAccessor();
 
 
 
@@ -30,7 +33,7 @@ namespace RentCar.Application
             services.AddMemoryCache();
 
             // AutoMapper — agar mapping profillar shu assembly ichida bo‘lsa
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());         
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return services;
         }

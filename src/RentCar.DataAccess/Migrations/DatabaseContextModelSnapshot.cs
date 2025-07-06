@@ -22,6 +22,26 @@ namespace RentCar.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Rent.Core.Entities.PermissionGroup", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_permission_group");
+
+                    b.ToTable("permission_group", (string)null);
+                });
+
             modelBuilder.Entity("RentCar.Core.Entities.Brand", b =>
                 {
                     b.Property<int>("Id")
@@ -82,7 +102,7 @@ namespace RentCar.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<decimal>("DailyPrice")
                         .HasColumnType("decimal(10, 2)")
@@ -159,7 +179,7 @@ namespace RentCar.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("uploaded_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("Url")
                         .IsRequired()
@@ -193,7 +213,7 @@ namespace RentCar.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("payment_date")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
@@ -247,6 +267,10 @@ namespace RentCar.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -259,6 +283,19 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
+                    b.Property<int>("PermissionGroupId")
+                        .HasColumnType("integer")
+                        .HasColumnName("permission_group_id");
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("short_name");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
                     b.HasKey("Id")
                         .HasName("pk_permissions");
 
@@ -266,81 +303,10 @@ namespace RentCar.DataAccess.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_permissions_name");
 
-                    b.ToTable("permissions", (string)null);
+                    b.HasIndex("PermissionGroupId")
+                        .HasDatabaseName("ix_permissions_permission_group_id");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "View car listings",
-                            Name = "ViewCars"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Create, edit, delete cars",
-                            Name = "ManageCars"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "View user profiles",
-                            Name = "ViewUsers"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Create, edit, delete users",
-                            Name = "ManageUsers"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Create new reservations",
-                            Name = "CreateReservation"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Description = "View reservation details",
-                            Name = "ViewReservations"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Description = "Update, cancel, complete reservations",
-                            Name = "ManageReservations"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Description = "Process and manage payments",
-                            Name = "ProcessPayments"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Description = "View car ratings",
-                            Name = "ViewRatings"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Description = "Create new ratings",
-                            Name = "CreateRating"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Description = "Create, edit, delete car brands",
-                            Name = "ManageBrands"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Description = "Upload and manage car images",
-                            Name = "UploadImages"
-                        });
+                    b.ToTable("permissions", (string)null);
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Rating", b =>
@@ -366,7 +332,7 @@ namespace RentCar.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<int>("Stars")
                         .HasColumnType("integer")
@@ -406,20 +372,20 @@ namespace RentCar.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<DateTime?>("LastModifiedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_modified_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<DateTime>("PickupDate")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("pickup_date");
 
                     b.Property<DateTime>("ReturnDate")
-                        .HasColumnType("timestamp without time zone")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("return_date");
 
                     b.Property<string>("Status")
@@ -457,6 +423,10 @@ namespace RentCar.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -477,26 +447,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_roles_name");
 
                     b.ToTable("roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Administrator role with full access",
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Default role for regular users",
-                            Name = "Customer"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Staff role for managing cars and reservations",
-                            Name = "Staff"
-                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.RolePermission", b =>
@@ -516,138 +466,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_role_permissions_permission_id");
 
                     b.ToTable("role_permissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 2
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 3
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 4
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 5
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 6
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 7
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 8
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 11
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 12
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 1
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 5
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 6
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 1
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 2
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 3
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 6
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 7
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 8
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 11
-                        },
-                        new
-                        {
-                            RoleId = 3,
-                            PermissionId = 12
-                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.User", b =>
@@ -659,17 +477,11 @@ namespace RentCar.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("address");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("timestamp with time zone")
@@ -691,6 +503,10 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("is_active");
+
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_verified");
 
                     b.Property<string>("Lastname")
                         .IsRequired()
@@ -730,12 +546,12 @@ namespace RentCar.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            Address = "123 Admin Lane",
                             CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DateOfBirth = new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "admin@carrental.com",
                             Firstname = "Jamshid",
                             IsActive = true,
+                            IsVerified = false,
                             Lastname = "Ismoilov",
                             PasswordHash = "h2q2T2u9Z8x4V5c1B0N7m6L5k4J3i2H1g0F9e8D7c6B5a4S3q2W1e0R9t8Y7u6I5o4P3a2S1d0F9g8H7j6K5l4Z3x2C1v0B9n8M7",
                             PhoneNumber = "555-123-4567",
@@ -760,13 +576,48 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_user_roles_role_id");
 
                     b.ToTable("user_roles", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1
-                        });
+            modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("ExpiredAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expired_at");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.Property<int?>("UserOTPsId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_ot_ps_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_ot_ps");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_ot_ps_user_id");
+
+                    b.HasIndex("UserOTPsId")
+                        .HasDatabaseName("ix_user_ot_ps_user_ot_ps_id");
+
+                    b.ToTable("user_ot_ps", (string)null);
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Car", b =>
@@ -812,6 +663,18 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("Reservation");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RentCar.Core.Entities.Permission", b =>
+                {
+                    b.HasOne("Rent.Core.Entities.PermissionGroup", "PermissionGroup")
+                        .WithMany("Permissions")
+                        .HasForeignKey("PermissionGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_permissions_permission_group_permission_group_id");
+
+                    b.Navigation("PermissionGroup");
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Rating", b =>
@@ -898,6 +761,28 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
+                {
+                    b.HasOne("RentCar.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_ot_ps_users_user_id");
+
+                    b.HasOne("SecureLoginApp.Core.Entities.UserOTPs", null)
+                        .WithMany("OtpCodes")
+                        .HasForeignKey("UserOTPsId")
+                        .HasConstraintName("fk_user_ot_ps_user_ot_ps_user_ot_ps_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Rent.Core.Entities.PermissionGroup", b =>
+                {
+                    b.Navigation("Permissions");
+                });
+
             modelBuilder.Entity("RentCar.Core.Entities.Brand", b =>
                 {
                     b.Navigation("Cars");
@@ -939,6 +824,11 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("Reservations");
 
                     b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
+                {
+                    b.Navigation("OtpCodes");
                 });
 #pragma warning restore 612, 618
         }

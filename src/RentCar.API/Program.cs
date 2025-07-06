@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RentCar.Application;
+using RentCar.Application.Helpers;
 using RentCar.DataAccess;
 using RentCar.DataAccess.Persistence;
 using System.Text;
@@ -47,7 +48,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddDataAccess(builder.Configuration).AddApplication();
+builder.Services.AddDataAccess(builder.Configuration).AddApplication().AddAuth(builder.Configuration);
 
 IConfiguration config = builder.Configuration;
 

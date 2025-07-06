@@ -19,7 +19,7 @@ namespace RentCar.DataAccess.Persistence.Configurations
             builder.Property(r => r.Comment)
                 .HasMaxLength(500); // Optional comment, max length 500
 
-            builder.Property(r => r.CreatedAt).HasDefaultValueSql("NOW()")
+            builder.Property(r => r.CreatedAt).HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'")
                 .IsRequired();
 
             // Configure unique constraint if a user can only rate a car once

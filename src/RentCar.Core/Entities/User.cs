@@ -11,7 +11,7 @@ public class User : BaseEntity
     public string Lastname { get; set; } = null!;
     public string Firstname { get; set; } = null!;
     public bool IsActive { get; set; } = true;
-    public string Address { get; set; }
+    public bool IsVerified { get; set; } = false;
 
     public string? RefreshToken { get; set; }
     // Navigation properties

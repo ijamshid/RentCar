@@ -22,7 +22,7 @@ namespace RentCar.DataAccess.Persistence.Configurations
             builder.Property(i => i.Order)
                 .IsRequired();
 
-            builder.Property(i => i.UploadedAt).HasDefaultValueSql("NOW()")
+            builder.Property(i => i.UploadedAt).HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'")
                 .IsRequired();
 
             // Configure relationship with Car
