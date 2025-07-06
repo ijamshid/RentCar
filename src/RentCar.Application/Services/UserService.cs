@@ -8,6 +8,7 @@ using RentCar.Application.Models.Users;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
+using SecureLoginApp.Core.Entities;
 
 namespace RentCar.Application.Services;
 
@@ -37,7 +38,7 @@ public class UserService : IUserService
         _authService = auth;
     }
 
-    public async Task<ApiResult<string>> RegisterAsync(string firstname,string lastname, string email, string password, bool isAdminSite, string a, DateTime b)
+    public async Task<ApiResult<string>> RegisterAsync(string firstname, string lastname, string email, string password, bool isAdminSite, string a, DateTime b)
     {
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (existingUser != null)
@@ -52,7 +53,7 @@ public class UserService : IUserService
             Lastname = lastname,
             Email = email,
             PasswordHash = hash,
-            DateOfBirth = b,
+            DateOfBirth = DateTime.SpecifyKind(b, DateTimeKind.Utc),
             PhoneNumber = a,
             Salt = salt,
             CreatedAt = DateTime.UtcNow,
@@ -121,20 +122,48 @@ public class UserService : IUserService
         });
     }
 
-    public async Task<ApiResult<string>> VerifyOtpAsync(OtpVerificationModel model)
+    public async Task<string> SendOtpEmailAsync(string email)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
-        if (user is null)
-            return ApiResult<string>.Failure(new[] { "Foydalanuvchi topilmadi." });
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user == null)
+            throw new Exception("Foydalanuvchi topilmadi.");
 
-        var otp = await _otpService.GetLatestOtpAsync(user.Id, model.Code);
-        if (otp is null || otp.ExpiredAt < DateTime.UtcNow)
-            return ApiResult<string>.Failure(new[] { "Kod noto‘g‘ri yoki muddati tugagan." });
+        var otpCode = new Random().Next(100000, 999999).ToString();
+
+        var otp = new UserOTPs
+        {
+            UserId= user.Id,
+            Code = otpCode,
+            CreatedAt = DateTime.UtcNow,
+            ExpiredAt = DateTime.UtcNow.AddMinutes(5)
+        };
+
+        await _context.UserOTPs.AddAsync(otp);
+        await _context.SaveChangesAsync();
+
+        await _emailService.SendOtpAsync(email, otpCode);
+
+        return otpCode;
+    }
+
+    public async Task<bool> VerifyOtpAsync(int userId, string inputCode)
+    {
+        var otp = await _context.UserOTPs
+            .Where(o => o.UserId == userId && o.Code == inputCode && o.ExpiredAt > DateTime.UtcNow)
+            .OrderByDescending(o => o.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        if (otp == null)
+            return false;  // Kod noto‘g‘ri yoki muddati o‘tgan
+
+        // Kod to‘g‘ri, foydalanuvchini tasdiqlashni amalga oshirish mumkin
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null) return false;
 
         user.IsVerified = true;
         await _context.SaveChangesAsync();
 
-        return ApiResult<string>.Success("OTP muvaffaqiyatli tasdiqlandi.");
+        return true;
     }
 
     public async Task<ApiResult<UserAuthResponseModel>> GetUserAuth()
@@ -232,5 +261,5 @@ public class UserService : IUserService
         return true;
     }
 
-   
+
 }

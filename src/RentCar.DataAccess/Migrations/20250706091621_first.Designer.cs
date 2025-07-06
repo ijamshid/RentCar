@@ -12,8 +12,8 @@ using RentCar.DataAccess.Persistence;
 namespace RentCar.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250705154923_initDDD")]
-    partial class initDDD
+    [Migration("20250706091621_first")]
+    partial class first
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -218,10 +218,9 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnName("payment_date")
                         .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
+                    b.Property<int>("PaymentMethod")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
+                        .HasColumnType("integer")
                         .HasColumnName("payment_method");
 
                     b.Property<int>("ReservationId")

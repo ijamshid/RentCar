@@ -2,16 +2,12 @@
 
 namespace RentCar.Application.DTOs
 {
-    public class ReservationCreateDto
+    public class ReturnCarDto
     {
-        [Required]
-        public int CarId { get; set; }
-
-        [Required]
-        public DateTime PickupDate { get; set; }
-
         [Required]
         public DateTime ReturnDate { get; set; }
 
+        [Required]
+        public double CarMileage { get; set; }
     }
 }

@@ -29,8 +29,8 @@ namespace RentCar.Application.Services
             {
                 UserId = userId,
                 Code = otpCode,
-                CreatedAt = DateTime.Now,
-                ExpiredAt = DateTime.Now.AddMinutes(5)
+                CreatedAt = DateTime.UtcNow,
+                ExpiredAt = DateTime.UtcNow.AddMinutes(5)
             };
 
             await context.UserOTPs.AddAsync(otp);
@@ -43,10 +43,11 @@ namespace RentCar.Application.Services
         public async Task<UserOTPs?> GetLatestOtpAsync(int userId, string code)
         {
             return await context.UserOTPs
-                .Where(o => o.UserId == userId && o.Code == code && o.ExpiredAt > DateTime.Now)
+                .Where(o => o.UserId == userId && o.Code == code && o.ExpiredAt > DateTime.UtcNow)
                 .OrderByDescending(o => o.CreatedAt)
                 .FirstOrDefaultAsync();
         }
+
 
         public bool ValidateOtp(string email, string code)
         {

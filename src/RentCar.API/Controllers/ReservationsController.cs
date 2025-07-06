@@ -1,73 +1,101 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.DTOs;
 using RentCar.Application.Services.Interfaces;
+using System.Security.Claims;
 
 namespace RentCar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationController : ControllerBase
+    [Authorize]  // Foydalanuvchi autentifikatsiyadan o‘tgan bo‘lishi shart
+    public class ReservationsController : ControllerBase
     {
         private readonly IReservationService _reservationService;
 
-        public ReservationController(IReservationService reservationService)
+        public ReservationsController(IReservationService reservationService)
         {
             _reservationService = reservationService;
         }
 
-        // GET: api/reservation
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var reservations = await _reservationService.GetAllAsync();
-            return Ok(reservations);
-        }
-
-        // GET: api/reservation/{id}
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var reservation = await _reservationService.GetByIdAsync(id);
-            if (reservation == null)
-                return NotFound($"Reservation with ID {id} not found.");
-
-            return Ok(reservation);
-        }
-
-        // POST: api/reservation
+        // POST: api/reservations
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ReservationCreateDto dto)
+        public async Task<IActionResult> CreateReservation([FromBody] ReservationCreateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var createdReservation = await _reservationService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = createdReservation.Id }, createdReservation);
+            var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            var createdReservation = await _reservationService.CreateReservationAsync(dto, userId);
+            return CreatedAtAction(nameof(GetReservationById), new { id = createdReservation.Id }, createdReservation);
         }
 
-        // PUT: api/reservation/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ReservationUpdateDto dto)
+        // POST: api/reservations/confirm/{id}
+        [HttpPost("confirm/{id}")]
+        public async Task<IActionResult> ConfirmReservation(int id)
         {
-            if (id != dto.Id)
-                return BadRequest("Reservation ID mismatch.");
+            var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
 
-            var updated = await _reservationService.UpdateAsync(dto);
-            if (!updated)
-                return NotFound($"Reservation with ID {id} not found.");
+            var result = await _reservationService.ConfirmReservationAsync(id, userId);
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
 
-            return NoContent();
+            return Ok(result.Data);
         }
 
-        // DELETE: api/reservation/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        // POST: api/reservations/cancel/{id}
+        [HttpPost("cancel/{id}")]
+        public async Task<IActionResult> CancelReservation(int id)
         {
-            var deleted = await _reservationService.DeleteAsync(id);
-            if (!deleted)
-                return NotFound($"Reservation with ID {id} not found.");
+            var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
 
-            return NoContent();
+            var result = await _reservationService.CancelReservationAsync(id, userId);
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Data);
+        }
+
+        // POST: api/reservations/return/{id}
+        [HttpPost("return/{id}")]
+        public async Task<IActionResult> ReturnCar(int id, [FromBody] ReturnCarDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            var result = await _reservationService.ReturnCarAsync(id, dto, userId);
+            if (!result.IsSuccess)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Data);
+        }
+
+        // Qo‘shimcha: GetById endpointi CreatedAtAction uchun
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetReservationById(int id)
+        {
+            var reservation = await _reservationService.GetByIdAsync(id);
+            if (reservation == null)
+                return NotFound();
+
+            return Ok(reservation);
+        }
+
+        // Token ichidan userId olish uchun yordamchi metod
+        private string? GetUserId()
+        {
+            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
     }
 }

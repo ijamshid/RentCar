@@ -36,15 +36,15 @@ namespace RentCar.Application.Services
 
             var result = _mapper.Map<IEnumerable<ReservationGetDto>>(reservations);
 
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
-
-            _cache.Set(cacheKey, result, cacheOptions);
+            _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
 
             return result;
         }
 
-        public async Task<ReservationGetDto> GetByIdAsync(int id)
+        public async Task<ReservationGetDto?> GetByIdAsync(int id)
         {
             string cacheKey = $"reservation_{id}";
 
@@ -61,101 +61,56 @@ namespace RentCar.Application.Services
 
             var result = _mapper.Map<ReservationGetDto>(reservation);
 
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
-
-            _cache.Set(cacheKey, result, cacheOptions);
+            _cache.Set(cacheKey, result, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            });
 
             return result;
         }
 
-        public async Task<ReservationGetDto> CreateAsync(ReservationCreateDto dto)
+        public async Task<ReservationGetDto> CreateReservationAsync(ReservationCreateDto dto, string userId)
         {
+            // userId ni int ga xavfsiz o‘tkazish
+            if (!int.TryParse(userId, out int userIdInt))
+                throw new UnauthorizedAccessException("Invalid user ID.");
+
             var car = await _context.Cars.FindAsync(dto.CarId);
-            var days = (dto.ReturnDate - dto.PickupDate).Days;
+            if (car == null)
+                throw new ArgumentException("Car not found");
+
+            var days = (dto.ReturnDate.Date - dto.PickupDate.Date).Days;
+            if (days <= 0)
+                throw new ArgumentException("ReturnDate must be after PickupDate");
+
             var total = days * car.DailyPrice;
 
-            var reservation = _mapper.Map<Reservation>(dto);
-
-            reservation.TotalPrice = total;
-            reservation.CreatedAt = DateTime.UtcNow;
-            reservation.Status = ReservationStatus.Pending;
-            reservation.Payment = new Payment
+            // Endi yangi Reservation entity yaratamiz
+            var reservation = new Reservation
             {
-                Amount = total,
-                Status = PaymentStatus.Pending,
-                PaymentMethod = PaymentMethod.Cash, // Default payment method
-                TransactionId = Guid.NewGuid().ToString(), // Generate a unique transaction ID
-                PaymentDate = DateTime.UtcNow
+                UserId = userIdInt,
+                CarId = dto.CarId,
+                PickupDate = dto.PickupDate,
+                ReturnDate = dto.ReturnDate,
+                TotalPrice = total,
+                Status = ReservationStatus.Pending,
+                CreatedAt = DateTime.UtcNow,
+                Payment = new Payment
+                {
+                    Amount = total,
+                    Status = PaymentStatus.Pending,
+                    PaymentMethod = PaymentMethod.Cash,
+                    TransactionId = Guid.NewGuid().ToString(),
+                    PaymentDate = DateTime.UtcNow
+                }
             };
 
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            // Cache invalidate (GetAll cache ni tozalaymiz)
             _cache.Remove("reservations");
 
-            var result = _mapper.Map<ReservationGetDto>(reservation);
-
-            return result;
-        }
-
-        public async Task<bool> ConfirmReservationAsync(int reservationId)
-        {
-            var reservation = await _context.Reservations
-                .Include(r => r.Payment)
-                .FirstOrDefaultAsync(r => r.Id == reservationId);
-
-            if (reservation == null || reservation.Status != ReservationStatus.Pending)
-                return false;
-
-            reservation.Status = ReservationStatus.Confirmed;
-            reservation.LastModifiedAt = DateTime.UtcNow;
-            reservation.Payment.Status = PaymentStatus.Completed;
-            reservation.Payment.PaymentDate = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> CancelReservationAsync(int reservationId)
-        {
-            var reservation = await _context.Reservations.FindAsync(reservationId);
-
-            if (reservation == null || reservation.Status != ReservationStatus.Pending)
-                return false;
-
-            reservation.Status = ReservationStatus.Cancelled;
-            reservation.LastModifiedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> CompleteReservationAsync(int reservationId)
-        {
-            var reservation = await _context.Reservations
-                .Include(r => r.Car)
-                .FirstOrDefaultAsync(r => r.Id == reservationId);
-
-            if (reservation == null || reservation.Status != ReservationStatus.Confirmed)
-                return false;
-
-            var now = DateTime.UtcNow;
-            if (now > reservation.ReturnDate)
-            {
-                var hoursLate = (now - reservation.ReturnDate).TotalHours;
-                var penalty = Math.Ceiling(hoursLate) * 5; // 5 per hour
-                reservation.TotalPrice += (decimal)penalty;
-                reservation.Status = ReservationStatus.Completed;
-            }
-            else
-            {
-                reservation.Status = ReservationStatus.Completed;
-            }
-
-            reservation.LastModifiedAt = now;
-            await _context.SaveChangesAsync();
-            return true;
+            return _mapper.Map<ReservationGetDto>(reservation);
         }
 
         public async Task<bool> UpdateAsync(ReservationUpdateDto dto)
@@ -167,7 +122,6 @@ namespace RentCar.Application.Services
             _mapper.Map(dto, reservation);
             await _context.SaveChangesAsync();
 
-            // Cache invalidate
             _cache.Remove("reservations");
             _cache.Remove($"reservation_{dto.Id}");
 
@@ -183,11 +137,105 @@ namespace RentCar.Application.Services
             _context.Reservations.Remove(reservation);
             await _context.SaveChangesAsync();
 
-            // Cache invalidate
             _cache.Remove("reservations");
             _cache.Remove($"reservation_{id}");
 
             return true;
+        }
+
+        public async Task<ServiceResult<ReservationGetDto>> ConfirmReservationAsync(int reservationId, string userId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Payment)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            if (reservation == null)
+                return ServiceResult<ReservationGetDto>.Fail("Reservation not found");
+
+            if (reservation.UserId != int.Parse(userId))
+                return ServiceResult<ReservationGetDto>.Fail("Unauthorized access");
+
+            if (reservation.Status != ReservationStatus.Pending)
+                return ServiceResult<ReservationGetDto>.Fail("Reservation cannot be confirmed");
+
+            reservation.Status = ReservationStatus.Confirmed;
+            reservation.LastModifiedAt = DateTime.UtcNow;
+
+            if (reservation.Payment != null)
+            {
+                reservation.Payment.Status = PaymentStatus.Completed;
+                reservation.Payment.PaymentDate = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var resultDto = _mapper.Map<ReservationGetDto>(reservation);
+            _cache.Remove("reservations");
+            _cache.Remove($"reservation_{reservation.Id}");
+
+            return ServiceResult<ReservationGetDto>.Success(resultDto);
+        }
+
+        public async Task<ServiceResult<ReservationGetDto>> CancelReservationAsync(int reservationId, string userId)
+        {
+            var reservation = await _context.Reservations.FindAsync(reservationId);
+
+            if (reservation == null)
+                return ServiceResult<ReservationGetDto>.Fail("Reservation not found");
+
+            if (reservation.UserId != int.Parse(userId))
+                return ServiceResult<ReservationGetDto>.Fail("Unauthorized access");
+
+            if (reservation.Status != ReservationStatus.Pending)
+                return ServiceResult<ReservationGetDto>.Fail("Reservation cannot be cancelled");
+
+            reservation.Status = ReservationStatus.Cancelled;
+            reservation.LastModifiedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            _cache.Remove("reservations");
+            _cache.Remove($"reservation_{reservation.Id}");
+
+            var resultDto = _mapper.Map<ReservationGetDto>(reservation);
+            return ServiceResult<ReservationGetDto>.Success(resultDto);
+        }
+
+        public async Task<ServiceResult<ReservationGetDto>> ReturnCarAsync(int reservationId, ReturnCarDto dto, string userId)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.Car)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            if (reservation == null)
+                return ServiceResult<ReservationGetDto>.Fail("Reservation not found");
+
+            if (reservation.UserId != int.Parse(userId))
+                return ServiceResult<ReservationGetDto>.Fail("Unauthorized access");
+
+            if (reservation.Status != ReservationStatus.Confirmed)
+                return ServiceResult<ReservationGetDto>.Fail("Reservation cannot be returned");
+
+            var now = DateTime.UtcNow;
+            decimal penalty = 0m;
+
+            if (now > reservation.ReturnDate)
+            {
+                var hoursLate = (now - reservation.ReturnDate).TotalHours;
+                penalty = (decimal)(Math.Ceiling(hoursLate) * 5); // penalty 5 per hour late
+                reservation.TotalPrice += penalty;
+            }
+
+            reservation.Status = ReservationStatus.Completed;
+            reservation.LastModifiedAt = now;
+
+            await _context.SaveChangesAsync();
+
+            _cache.Remove("reservations");
+            _cache.Remove($"reservation_{reservation.Id}");
+
+            var resultDto = _mapper.Map<ReservationGetDto>(reservation);
+            return ServiceResult<ReservationGetDto>.Success(resultDto);
         }
     }
 }

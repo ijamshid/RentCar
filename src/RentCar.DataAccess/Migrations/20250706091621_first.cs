@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace RentCar.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class initDDD : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -300,7 +300,7 @@ namespace RentCar.DataAccess.Migrations
                     reservation_id = table.Column<int>(type: "integer", nullable: false),
                     amount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    payment_method = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    payment_method = table.Column<int>(type: "integer", maxLength: 100, nullable: false),
                     transaction_id = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     payment_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'")
                 },

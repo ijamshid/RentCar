@@ -16,9 +16,5 @@ namespace RentCar.Application.DTOs
         [Required]
         [Range(0, double.MaxValue)]
         public decimal TotalPrice { get; set; }
-
-        [Required]
-        public string Status { get; set; }
     }
-
 }
