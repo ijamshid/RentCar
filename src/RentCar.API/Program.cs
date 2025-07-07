@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RentCar.Application;
+using RentCar.Application.Common;
 using RentCar.Application.Helpers;
+using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.DataAccess;
 using RentCar.DataAccess.Persistence;
 using System.Text;
@@ -14,8 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://*:{port}");
 
-
-
+builder.Services.Configure<EmailConfiguration>(
+    builder.Configuration.GetSection("EmailConfiguration"));
+builder.Services.Configure<JwtOption>(
+    builder.Configuration.GetSection("JwtOption"));
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -67,7 +71,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = config["JwtOption:Issuer"],
         ValidAudience = config["JwtOption:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtOption:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtOption:SecretKey"]))
     };
 });
 

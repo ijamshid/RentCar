@@ -113,13 +113,20 @@ public class UserService : IUserService
             LastName = user.Lastname,
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList(),
-            Permissions = user.UserRoles
-                 .SelectMany(ur => ur.Role.RolePermissions)
-                 .Select(p => p.Permission.ShortName)
-                 .Distinct()
-                 .ToList()
+            Roles = user.UserRoles?
+                       .Where(ur => ur.Role != null && !string.IsNullOrEmpty(ur.Role.Name))
+                       .Select(ur => ur.Role.Name)
+                       .ToList() ?? new List<string>(),
+
+            Permissions = user.UserRoles?
+                            .Where(ur => ur.Role?.RolePermissions != null)
+                            .SelectMany(ur => ur.Role.RolePermissions)
+                            .Where(rp => rp.Permission != null && !string.IsNullOrEmpty(rp.Permission.ShortName))
+                            .Select(rp => rp.Permission.ShortName)
+                            .Distinct()
+                            .ToList() ?? new List<string>()
         });
+
     }
 
     public async Task<string> SendOtpEmailAsync(string email)

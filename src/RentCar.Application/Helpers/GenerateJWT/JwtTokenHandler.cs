@@ -22,22 +22,28 @@ public class JwtTokenHandler : IJwtTokenHandler
     public string GenerateAccessToken(User user, string token)
     {
         var claims = new List<Claim>()
-        {
-            new Claim(CustomClaimNames.Id, user.Id.ToString()),
-            new Claim(CustomClaimNames.Email, user.Email), 
-            //new Claim(CustomClaimNames.Role, user.Role.ToString()), 
-            new Claim(CustomClaimNames.Token, token)
-        };
+    {
+        new Claim(CustomClaimNames.Id, user.Id.ToString()),
+        new Claim(CustomClaimNames.Email, user.Email),
+        new Claim(CustomClaimNames.Token, token)
+    };
 
         if (user.UserRoles != null && user.UserRoles.Any())
         {
             foreach (var userRole in user.UserRoles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, userRole.Role.Name));
+                if (userRole.Role?.RolePermissions != null)
+                {
+                    foreach (var rolePermission in userRole.Role.RolePermissions)
+                    {
+                        if (rolePermission.Permission != null && !string.IsNullOrEmpty(rolePermission.Permission.ShortName))
+                        {
+                            claims.Add(new Claim("permission", rolePermission.Permission.ShortName));
+                        }
+                    }
+                }
             }
         }
-
-
 
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOption.SecretKey));
 
@@ -51,6 +57,7 @@ public class JwtTokenHandler : IJwtTokenHandler
 
         return new JwtSecurityTokenHandler().WriteToken(jwtToken);
     }
+
 
     public string GenerateRefreshToken()
     {
