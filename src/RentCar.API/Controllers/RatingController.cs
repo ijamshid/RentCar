@@ -69,5 +69,18 @@ namespace RentCar.API.Controllers
 
             return NoContent();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RateCar(RatingCreateDto dto)
+        {
+            var userId = User.GetUserId(); // extension method bo‘lishi mumkin
+            var success = await _ratingService.RateCarAsync(dto, userId);
+
+            if (!success)
+                return BadRequest("Reservation not found, not completed, or already rated.");
+
+            return Ok("Rating submitted successfully.");
+        }
+
     }
 }

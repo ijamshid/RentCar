@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using RentCar.Application.DTOs;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
+using RentCar.Core.Enums;
 using RentCar.DataAccess.Persistence;
 
 namespace RentCar.Application.Services
@@ -83,6 +84,40 @@ namespace RentCar.Application.Services
 
             _cache.Remove("ratings");
             _cache.Remove($"rating_{dto.Id}");
+
+            return true;
+        }
+
+        public async Task<bool> RateCarAsync(RatingCreateDto dto, int userId)
+        {
+            // 1️⃣ Reservation mavjudligini tekshirish
+            var reservation = await _context.Reservations
+                .FirstOrDefaultAsync(r => r.Id == dto.ReservationId && r.UserId == userId);
+
+            if (reservation == null)
+                return false;
+
+            // 2️⃣ Reservation statusi "Completed" bo‘lishi shart
+            if (reservation.Status != ReservationStatus.Completed)
+                return false;
+
+            // 3️⃣ Duplicate rating tekshirish (shu foydalanuvchi shu car uchun reyting berganmi)
+            var existingRating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.Id == dto.ReservationId && r.UserId == userId);
+
+            if (existingRating != null)
+                return false;
+
+            // 4️⃣ Reytingni DB ga qo‘shish
+            var rating = _mapper.Map<Rating>(dto);
+            rating.UserId = userId;
+            rating.CreatedAt = DateTime.UtcNow;
+
+            _context.Ratings.Add(rating);
+            await _context.SaveChangesAsync();
+
+            // 5️⃣ Cache tozalash
+            _cache.Remove("ratings");
 
             return true;
         }

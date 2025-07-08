@@ -10,5 +10,7 @@ namespace RentCar.Application.Services.Interfaces
         Task<RatingGetDto> CreateAsync(RatingCreateDto dto);
         Task<bool> UpdateAsync(RatingUpdateDto dto);
         Task<bool> DeleteAsync(int id);
+
+        Task<bool> RateCarAsync(RatingCreateDto dto, int userId);
     }
 }
