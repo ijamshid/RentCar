@@ -9,10 +9,11 @@ namespace RentCar.Application.Helpers
 {
     public static class AuthExtensions
     {
+
         public static IServiceCollection AddAuth(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             var jwtOptions = configuration.GetSection("JwtOption").Get<JwtOption>();
-
+            
             if (jwtOptions == null)
             {
                 throw new InvalidOperationException("JWT sozlamalari topilmadi. appsettings.json faylida 'JwtOption' bo'limini tekshiring.");

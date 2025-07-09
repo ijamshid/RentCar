@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.DTOs;
+using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
 
 namespace RentCar.API.Controllers
@@ -9,20 +11,24 @@ namespace RentCar.API.Controllers
     [ApiController]
     public class CarsController(ICarService carService) : ControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var cars = await carService.GetAllAsync();
-            return Ok(cars);
-        }
+       
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetCar))]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var cars = await carService.GetByIdAsync(id);
             return Ok(cars);
         }
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetCar))]
+        [HttpGet]
+        public async Task<IActionResult> GetlAll()
+        {
+            var cars = await carService.GetAllAsync();
+            return Ok(cars);
+        }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateCar))]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CarCreateDto dto)
         {
@@ -30,6 +36,7 @@ namespace RentCar.API.Controllers
             return Created();
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UpdateCar))]
         [HttpPut]
         public IActionResult Update([FromBody] CarUpdateDto dto)
         {
@@ -37,6 +44,7 @@ namespace RentCar.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.DeleteCar))]
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] int id)
         {

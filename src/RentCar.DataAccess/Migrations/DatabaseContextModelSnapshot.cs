@@ -61,7 +61,7 @@ namespace RentCar.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -545,16 +545,16 @@ namespace RentCar.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            CreatedAt = new DateTime(2025, 7, 9, 12, 0, 0, 0, DateTimeKind.Utc),
+                            DateOfBirth = new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc),
                             Email = "admin@carrental.com",
                             Firstname = "Jamshid",
                             IsActive = true,
-                            IsVerified = false,
+                            IsVerified = true,
                             Lastname = "Ismoilov",
-                            PasswordHash = "h2q2T2u9Z8x4V5c1B0N7m6L5k4J3i2H1g0F9e8D7c6B5a4S3q2W1e0R9t8Y7u6I5o4P3a2S1d0F9g8H7j6K5l4Z3x2C1v0B9n8M7",
+                            PasswordHash = "f2P+NdhTXkWiPo+5GiJf/9t1XjsYXOO9q1hE6ZQkvzE=",
                             PhoneNumber = "555-123-4567",
-                            Salt = "k5j4h3g2f1e0d9c8b7a6s5q4w3e2r1t0y9u8i7o6p5a4s3d2f1g0h9j8k7l6z5x4c3v2b1n0m9q8w7e6r5t4y3u2i1o0p9a8s7d6f5g4h3j2k1l0"
+                            Salt = "a3f1d1e8-cd55-4b3c-9a12-8c3b3f9b2e4a"
                         });
                 });
 
@@ -595,26 +595,17 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
                     b.Property<DateTime?>("ExpiredAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("expired_at");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.Property<int?>("UserOTPsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_ot_ps_id");
-
                     b.HasKey("Id")
                         .HasName("pk_user_ot_ps");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_ot_ps_user_id");
-
-                    b.HasIndex("UserOTPsId")
-                        .HasDatabaseName("ix_user_ot_ps_user_ot_ps_id");
 
                     b.ToTable("user_ot_ps", (string)null);
                 });
@@ -760,23 +751,6 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
-                {
-                    b.HasOne("RentCar.Core.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_ot_ps_users_user_id");
-
-                    b.HasOne("SecureLoginApp.Core.Entities.UserOTPs", null)
-                        .WithMany("OtpCodes")
-                        .HasForeignKey("UserOTPsId")
-                        .HasConstraintName("fk_user_ot_ps_user_ot_ps_user_ot_ps_id");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Rent.Core.Entities.PermissionGroup", b =>
                 {
                     b.Navigation("Permissions");
@@ -823,11 +797,6 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("Reservations");
 
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
-                {
-                    b.Navigation("OtpCodes");
                 });
 #pragma warning restore 612, 618
         }

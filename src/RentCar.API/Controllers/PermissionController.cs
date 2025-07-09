@@ -17,7 +17,7 @@ namespace RentCar.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetPermissions))]
         public IActionResult GetPermissions()
         {
             var allPermissions = _permissionService.GetAllPermissionDescriptions();

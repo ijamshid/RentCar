@@ -8,6 +8,7 @@ using RentCar.Application;
 using RentCar.Application.Common;
 using RentCar.Application.Helpers;
 using RentCar.Application.Helpers.GenerateJWT;
+using RentCar.Application.Security.AuthEnums;
 using RentCar.DataAccess;
 using RentCar.DataAccess.Persistence;
 using System.Text;
@@ -54,11 +55,16 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddDataAccess(builder.Configuration).AddApplication().AddAuth(builder.Configuration);
 
-builder.Services.AddAuthorization(builder =>
+builder.Services.AddAuthorization(options =>
 {
-    builder.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-    builder.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    // ApplicationPermissionCode enumining barcha qiymatlari bo'yicha policy yaratish
+    foreach (var permissionName in Enum.GetNames(typeof(ApplicationPermissionCode)))
+    {
+        options.AddPolicy(permissionName, policy =>
+            policy.RequireClaim("permission", permissionName));
+    }
 });
+
 
 builder.Services.AddRateLimiter(options =>
 {

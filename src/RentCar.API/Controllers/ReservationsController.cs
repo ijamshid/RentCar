@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.DTOs;
+using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
 using System.Security.Claims;
 
@@ -18,6 +19,7 @@ namespace RentCar.API.Controllers
             _reservationService = reservationService;
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateReservation))]
         // POST: api/reservations
         [HttpPost]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationCreateDto dto)
@@ -81,6 +83,7 @@ namespace RentCar.API.Controllers
             return Ok(result.Data);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetReservation))]
         // Qo‘shimcha: GetById endpointi CreatedAtAction uchun
         [HttpGet("{id}")]
         public async Task<IActionResult> GetReservationById(int id)

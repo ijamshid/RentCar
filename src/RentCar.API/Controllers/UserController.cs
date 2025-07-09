@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.DTOs;
+using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
 namespace RentCar.API.Controllers
 {
@@ -13,6 +15,8 @@ namespace RentCar.API.Controllers
         {
             _userService = userService;
         }
+
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UserRead))]
         // GET: api/User
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -21,6 +25,7 @@ namespace RentCar.API.Controllers
             return Ok(users);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UserRead))]
         // GET: api/User/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -32,6 +37,19 @@ namespace RentCar.API.Controllers
             return Ok(user);
         }
 
+
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UserRead))]
+        [HttpGet("get-user-auth")]
+        public async Task<IActionResult> GetUserAuth()
+        {
+            var result = await _userService.GetUserAuth();
+            if (result.IsSuccess)
+                return Ok(result);
+
+            return BadRequest(result);
+        }
+
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UserCreate))]
         // POST: api/User
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] UserCreateDto dto)
@@ -40,6 +58,7 @@ namespace RentCar.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = createdUser.Id }, createdUser);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UserUpdate))]
         // PUT: api/User
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] UserUpdateDto dto)
@@ -51,6 +70,7 @@ namespace RentCar.API.Controllers
             return Ok("User successfully updated.");
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UserDelete))]
         // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

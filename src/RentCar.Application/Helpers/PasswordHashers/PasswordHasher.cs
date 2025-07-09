@@ -1,4 +1,4 @@
-﻿using RentCar.Application.Helpers.PasswordHashers;
+﻿using RentCar.Application.Helpers.PasswordHasher;
 using System.Security.Cryptography;
 using System.Text;
 

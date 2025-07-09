@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using RentCar.Application.Helpers.GenerateJWT;
+using RentCar.Application.Helpers.PasswordHasher;
 using RentCar.Application.Helpers.PasswordHashers;
 using RentCar.Application.Services;
 using RentCar.Application.Services.Impl;

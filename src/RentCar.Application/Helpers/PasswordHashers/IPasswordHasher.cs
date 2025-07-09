@@ -1,4 +1,4 @@
-﻿namespace RentCar.Application.Helpers.PasswordHashers
+﻿namespace RentCar.Application.Helpers.PasswordHasher
 {
     public interface IPasswordHasher
     {

@@ -18,8 +18,7 @@ namespace RentCar.DataAccess.Persistence.Configurations
             builder.Property(b => b.CountryOfOrigin)
                 .HasMaxLength(100);
 
-            builder.Property(u => u.CreatedAt)
-     .HasDefaultValueSql("NOW()")
+            builder.Property(u => u.CreatedAt).HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'")
                 .IsRequired();
 
             // Configure one-to-many relationship with Car

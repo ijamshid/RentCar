@@ -50,7 +50,7 @@ namespace RentCar.Application.Services
             if (_cache.TryGetValue(cacheKey, out RatingGetDto cachedRating))
                 return cachedRating;
 
-            var rating = await _context.Ratings.FindAsync(id);
+            var rating = await _context.Ratings.FirstOrDefaultAsync(a => a.Id == id);
             if (rating == null)
                 return null;
 
@@ -75,7 +75,7 @@ namespace RentCar.Application.Services
 
         public async Task<bool> UpdateAsync(RatingUpdateDto dto)
         {
-            var rating = await _context.Ratings.FindAsync(dto.Id);
+            var rating = await _context.Ratings.FirstOrDefaultAsync(a => a.Id == dto.Id);
             if (rating == null)
                 return false;
 
@@ -124,7 +124,7 @@ namespace RentCar.Application.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
+            var rating = await _context.Ratings.FirstOrDefaultAsync(a => a.Id == id);
             if (rating == null)
                 return false;
 

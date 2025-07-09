@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.DTOs;
+using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
 
 namespace RentCar.API.Controllers
@@ -15,6 +17,7 @@ namespace RentCar.API.Controllers
             _ratingService = ratingService;
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetRating))]
         // GET: api/rating
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -23,6 +26,7 @@ namespace RentCar.API.Controllers
             return Ok(ratings);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetRating))]
         // GET: api/rating/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -34,6 +38,7 @@ namespace RentCar.API.Controllers
             return Ok(rating);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateRating))]
         // POST: api/rating
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] RatingCreateDto dto)
@@ -45,6 +50,7 @@ namespace RentCar.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = createdRating.Id }, createdRating);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UpdateRating))]
         // PUT: api/rating/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] RatingUpdateDto dto)
@@ -59,6 +65,7 @@ namespace RentCar.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.DeleteRating))]
         // DELETE: api/rating/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -70,17 +77,7 @@ namespace RentCar.API.Controllers
             return NoContent();
         }
 
-        [HttpPost("rate")]
-        public async Task<IActionResult> RateCar(RatingCreateDto dto)
-        {
-            var userId = User.GetUserId(); // extension method bo‘lishi mumkin
-            var success = await _ratingService.RateCarAsync(dto, userId);
-
-            if (!success)
-                return BadRequest("Reservation not found, not completed, or already rated.");
-
-            return Ok("Rating submitted successfully.");
-        }
+      
 
     }
 }

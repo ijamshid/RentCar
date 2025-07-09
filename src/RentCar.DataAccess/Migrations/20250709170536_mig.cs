@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace RentCar.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class first : Migration
+    public partial class mig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,7 +20,7 @@ namespace RentCar.DataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     country_of_origin = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
@@ -53,6 +53,22 @@ namespace RentCar.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_roles", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "user_ot_ps",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    email = table.Column<string>(type: "text", nullable: false),
+                    code = table.Column<string>(type: "text", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    expired_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_user_ot_ps", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,34 +142,6 @@ namespace RentCar.DataAccess.Migrations
                         name: "fk_permissions_permission_group_permission_group_id",
                         column: x => x.permission_group_id,
                         principalTable: "permission_group",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "user_ot_ps",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    user_id = table.Column<int>(type: "integer", nullable: false),
-                    code = table.Column<string>(type: "text", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    expired_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    user_ot_ps_id = table.Column<int>(type: "integer", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_user_ot_ps", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_user_ot_ps_user_ot_ps_user_ot_ps_id",
-                        column: x => x.user_ot_ps_id,
-                        principalTable: "user_ot_ps",
-                        principalColumn: "id");
-                    table.ForeignKey(
-                        name: "fk_user_ot_ps_users_user_id",
-                        column: x => x.user_id,
-                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -323,8 +311,8 @@ namespace RentCar.DataAccess.Migrations
 
             migrationBuilder.InsertData(
                 table: "users",
-                columns: new[] { "id", "date_of_birth", "email", "firstname", "is_active", "is_verified", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
-                values: new object[] { 1, new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "admin@carrental.com", "Jamshid", true, false, "Ismoilov", "h2q2T2u9Z8x4V5c1B0N7m6L5k4J3i2H1g0F9e8D7c6B5a4S3q2W1e0R9t8Y7u6I5o4P3a2S1d0F9g8H7j6K5l4Z3x2C1v0B9n8M7", "555-123-4567", null, "k5j4h3g2f1e0d9c8b7a6s5q4w3e2r1t0y9u8i7o6p5a4s3d2f1g0h9j8k7l6z5x4c3v2b1n0m9q8w7e6r5t4y3u2i1o0p9a8s7d6f5g4h3j2k1l0" });
+                columns: new[] { "id", "created_at", "date_of_birth", "email", "firstname", "is_active", "is_verified", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
+                values: new object[] { 1, new DateTime(2025, 7, 9, 12, 0, 0, 0, DateTimeKind.Utc), new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), "admin@carrental.com", "Jamshid", true, true, "Ismoilov", "f2P+NdhTXkWiPo+5GiJf/9t1XjsYXOO9q1hE6ZQkvzE=", "555-123-4567", null, "a3f1d1e8-cd55-4b3c-9a12-8c3b3f9b2e4a" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_brands_name",
@@ -407,16 +395,6 @@ namespace RentCar.DataAccess.Migrations
                 table: "roles",
                 column: "name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_ot_ps_user_id",
-                table: "user_ot_ps",
-                column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_ot_ps_user_ot_ps_id",
-                table: "user_ot_ps",
-                column: "user_ot_ps_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_user_roles_role_id",

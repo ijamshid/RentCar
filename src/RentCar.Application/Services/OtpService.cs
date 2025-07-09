@@ -17,9 +17,9 @@ namespace RentCar.Application.Services
             this.context = context;
             this.emailService = emailService;
         }
-        public async Task<string> GenerateOtpAsync(int userId)
+        public async Task<string> GenerateOtpAsync(string email)
         {
-            var user = await context.Users.FindAsync(userId);
+            var user = await context.Users.FirstOrDefaultAsync(a => a.Email == email);
             if (user == null)
                 throw new Exception("User not found");
 
@@ -27,7 +27,7 @@ namespace RentCar.Application.Services
 
             var otp = new UserOTPs
             {
-                UserId = userId,
+                Email = email,
                 Code = otpCode,
                 CreatedAt = DateTime.UtcNow,
                 ExpiredAt = DateTime.UtcNow.AddMinutes(5)
@@ -40,10 +40,10 @@ namespace RentCar.Application.Services
             return otpCode;
         }
 
-        public async Task<UserOTPs?> GetLatestOtpAsync(int userId, string code)
+        public async Task<UserOTPs?> GetLatestOtpAsync(string email, string code)
         {
             return await context.UserOTPs
-                .Where(o => o.UserId == userId && o.Code == code && o.ExpiredAt > DateTime.UtcNow)
+                .Where(o => o.Email == email && o.Code == code && o.ExpiredAt > DateTime.UtcNow)
                 .OrderByDescending(o => o.CreatedAt)
                 .FirstOrDefaultAsync();
         }
