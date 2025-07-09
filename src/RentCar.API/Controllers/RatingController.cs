@@ -70,7 +70,7 @@ namespace RentCar.API.Controllers
             return NoContent();
         }
 
-        [HttpPost]
+        [HttpPost("rate")]
         public async Task<IActionResult> RateCar(RatingCreateDto dto)
         {
             var userId = User.GetUserId(); // extension method bo‘lishi mumkin

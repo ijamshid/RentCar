@@ -54,27 +54,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddDataAccess(builder.Configuration).AddApplication().AddAuth(builder.Configuration);
 
-IConfiguration config = builder.Configuration;
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = config["JwtOption:Issuer"],
-        ValidAudience = config["JwtOption:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JwtOption:SecretKey"]))
-    };
-});
-
 builder.Services.AddAuthorization(builder =>
 {
     builder.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));

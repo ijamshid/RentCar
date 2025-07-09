@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RentCar.Application.Helpers.GenerateJWT;
-using SecureLoginApp.Application.Helpers.GenerateJwt;
 using System.Text;
 
 namespace RentCar.Application.Helpers
@@ -18,8 +17,27 @@ namespace RentCar.Application.Helpers
             {
                 throw new InvalidOperationException("JWT sozlamalari topilmadi. appsettings.json faylida 'JwtOption' bo'limini tekshiring.");
             }
+            serviceCollection.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+               .AddJwtBearer(o =>
+               {
+                   o.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuer = true,
+                       ValidateAudience = true,
+                       ValidateLifetime = true,
+                       ValidateIssuerSigningKey = true,
+                       ClockSkew = TimeSpan.Zero,
+                       ValidIssuer = jwtOptions.Issuer,
+                       ValidAudience = jwtOptions.Audience,
+                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+                   };
+               });
 
-           
 
             return serviceCollection;
         }

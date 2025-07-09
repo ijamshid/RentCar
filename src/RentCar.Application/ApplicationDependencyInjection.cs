@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Helpers.PasswordHashers;
 using RentCar.Application.Services;
@@ -24,7 +25,7 @@ namespace RentCar.Application
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddHttpContextAccessor();
-
+            
 
 
 
