@@ -69,8 +69,6 @@ public enum ApplicationPermissionCode
     GetReservation,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Create Reservation")]
     CreateReservation,
-    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Confirm Reservation")]
-    ConfirmReservation,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Cancel Reservation")]
     CancelReservation,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Update Reservation")]

@@ -16,8 +16,6 @@ namespace RentCar.Application.Services.Interfaces
 
         // Maxsus reservation statuslarini boshqarish metodlari
 
-        Task<ServiceResult<ReservationGetDto>> ConfirmReservationAsync(int reservationId, string userId);
-
         Task<ServiceResult<ReservationGetDto>> CancelReservationAsync(int reservationId, string userId);
 
         Task<ServiceResult<ReservationGetDto>> ReturnCarAsync(int reservationId, ReturnCarDto dto, string userId);
