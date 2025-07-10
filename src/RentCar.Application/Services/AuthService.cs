@@ -34,23 +34,23 @@ public class AuthService : IAuthService
         _jwtTokenHandler = jwtTokenHandler;
     }
 
-    public async Task<ApiResult<string>> RegisterAsync(string firstname, string lastname, string email, string password, bool isAdminSite, string a, DateTime b)
+    public async Task<ApiResult<string>> RegisterAsync(RegisterUserModel model)
     {
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
         if (existingUser != null)
             return ApiResult<string>.Failure(new[] { "Email allaqachon mavjud" });
 
         var salt = Guid.NewGuid().ToString();
-        var hash = _passwordHasher.Encrypt(password, salt);
+        var hash = _passwordHasher.Encrypt(model.Password, salt);
 
         var user = new User
         {
-            Firstname = firstname,
-            Lastname = lastname,
-            Email = email,
+            Firstname = model.FirstName,
+            Lastname = model.LastName,
+            Email = model.Email,
             PasswordHash = hash,
-            DateOfBirth = DateTime.SpecifyKind(b, DateTimeKind.Utc),
-            PhoneNumber = a,
+            DateOfBirth = model.DateOfBirth,
+            PhoneNumber = model.PhoneNumber,
             Salt = salt,
             CreatedAt = DateTime.UtcNow,
             IsVerified = false // Yangi foydalanuvchilar odatda tasdiqlanmagan holda boshlanadi
@@ -60,7 +60,7 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
 
         // --- Rolni isAdminSite ga qarab belgilash ---
-        string roleName = isAdminSite ? "Admin" : "User";
+        string roleName = model.isAdminSite  ? "Admin" : "User";
         var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
 
         if (defaultRole == null)
@@ -78,7 +78,7 @@ public class AuthService : IAuthService
         // --- Rolni belgilash qismi tugadi ---
 
         var otp = await _otpService.GenerateOtpAsync(user.Email);
-        await _emailService.SendOtpAsync(email, otp);
+        await _emailService.SendOtpAsync(model.Email, otp);
 
         return ApiResult<string>.Success("Ro'yxatdan o'tdingiz.");
     }

@@ -13,6 +13,6 @@ public interface IAuthService
 
     Task<bool> VerifyOtpAsync(string email, string inputCode);
 
-    Task<ApiResult<string>> RegisterAsync(string firstname, string lastname, string email, string password, bool isAdminSite, string a, DateTime b);
+    Task<ApiResult<string>> RegisterAsync(RegisterUserModel model);
     Task<ApiResult<LoginResponseModel>> LoginAsync(LoginUserModel model);
 }

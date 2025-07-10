@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using RentCar.Application.Models.Brand;
 using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;

@@ -20,14 +20,7 @@ namespace RentCar.API.Controllers
         [HttpPost("register")]
         public async Task<ApiResult<string>> RegisterAsync([FromBody] RegisterUserModel model)
         {
-            var result = await _authService.RegisterAsync(
-                model.FirstName,
-                model.LastName,
-                model.Email,
-                model.Password,
-                model.isAdminSite,
-                model.PhoneNumber,
-                model.DateOfBirth);
+            var result = await _authService.RegisterAsync(model);
             return result;
         }
 
@@ -38,17 +31,7 @@ namespace RentCar.API.Controllers
             return result;
         }
 
-        //// Emailga OTP yuborish uchun endpoint
-        //[HttpPost("send-otp")]
-        //public async Task<IActionResult> SendOtp([FromBody] SendOtpRequestModel model)
-        //{
-        //    // model ichida userId va email bo'lishi kerak
-        //    var otpCode = await _authService.SendOtpEmailAsync(model.Email);
-        //    if (string.IsNullOrEmpty(otpCode))
-        //        return BadRequest("OTP yuborishda xatolik yuz berdi.");
-
-        //    return Ok(new { Message = "OTP yuborildi." });
-        //}
+       
 
         // OTPni tekshirish uchun endpoint
         [HttpPost("verify-otp")]
