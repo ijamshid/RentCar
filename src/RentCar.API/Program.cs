@@ -1,8 +1,4 @@
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RentCar.Application;
 using RentCar.Application.Common;
@@ -10,12 +6,10 @@ using RentCar.Application.Helpers;
 using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Security.AuthEnums;
 using RentCar.DataAccess;
-using RentCar.DataAccess.Persistence;
-using System.Text;
 using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://*:{port}");
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//builder.WebHost.UseUrls($"http://*:{port}");
 
 builder.Services.Configure<EmailConfiguration>(
     builder.Configuration.GetSection("EmailConfiguration"));
@@ -102,18 +96,18 @@ builder.Services.AddCors(options =>
   //builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
 var app = builder.Build();
 // Migratsiya
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-        await context.Database.MigrateAsync();
-    }
-    catch (Exception ex)
-    {
-        app.Logger.LogError(ex, "Migration failed.");
-    }
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    try
+//    {
+//        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+//        await context.Database.MigrateAsync();
+//    }
+//    catch (Exception ex)
+//    {
+//        app.Logger.LogError(ex, "Migration failed.");
+//    }
+//}
 
 
 app.UseSwagger();
