@@ -10,6 +10,10 @@ namespace RentCar.DataAccess.Persistence.Configurations
         {
             builder.HasKey(r => r.Id);
 
+            // CreatedAt uchun default qiymat (agar kerak bo'lsa)
+            builder.Property(p => p.CreatedAt)
+                .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+
             builder.Property(r => r.Name)
                 .IsRequired()
                 .HasMaxLength(50);

@@ -12,7 +12,7 @@ namespace RentCar.Core.Entities
 
         // Navigation property
         public int PermissionGroupId { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } 
         public DateTime? UpdatedAt { get; set; }
 
 
