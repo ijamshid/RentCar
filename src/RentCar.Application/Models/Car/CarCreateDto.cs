@@ -1,7 +1,7 @@
 ﻿using RentCar.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace RentCar.Application.DTOs
+namespace RentCar.Application.Models.Car
 {
     public class CarCreateDto
     {

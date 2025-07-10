@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.Rating;
 using RentCar.Core.Entities;
 
 namespace RentCar.Application.Mapping

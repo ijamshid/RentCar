@@ -1,18 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RentCar.Application.DTOs
+namespace RentCar.Application.Models.User2
 {
-    public class UserGetDto
+    public class UserUpdateDto
     {
+        [Required]
         public int Id { get; set; }
 
+        [Required]
+        [MaxLength(100)]
         public string FirstName { get; set; }
 
+        [Required]
+        [MaxLength(100)]
         public string LastName { get; set; }
-        public string Email { get; set; }
+
+        [Phone]
+        [Required]
         public string PhoneNumber { get; set; }
+
         public bool IsActive { get; set; }
+        [Required, MaxLength(100)]
         public string Address { get; set; }
+        [Required]
         public DateTime? DateOfBirth { get; set; } // Nullable DateTime
 
     }

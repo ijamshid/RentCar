@@ -1,5 +1,5 @@
-﻿using RentCar.Application.DTOs;
-using RentCar.Application.Helpers.GenerateJWT;
+﻿using RentCar.Application.Helpers.GenerateJWT;
+using RentCar.Application.Models.User2;
 using RentCar.Application.Models.Users;
 
 namespace RentCar.Application.Services.Interfaces

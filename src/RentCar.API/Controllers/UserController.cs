@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.User2;
 using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
 namespace RentCar.API.Controllers

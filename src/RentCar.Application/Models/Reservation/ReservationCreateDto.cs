@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RentCar.Application.DTOs
+namespace RentCar.Application.Models.Reservation
 {
     public class ReservationCreateDto
     {

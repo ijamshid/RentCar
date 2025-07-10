@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.Car;
+using RentCar.Application.Models.Reservation;
 using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
 using System.Security.Claims;
@@ -34,7 +35,24 @@ namespace RentCar.API.Controllers
             var createdReservation = await _reservationService.CreateReservationAsync(dto, userId);
             return CreatedAtAction(nameof(GetReservationById), new { id = createdReservation.Id }, createdReservation);
         }
+        
+        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateReservation))]
+        // POST: api/reservations
+        [HttpPut]
+        public async Task<IActionResult> UpdateReservation([FromBody] ReservationUpdateDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
+            var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            var Reservation = await _reservationService.UpdateAsync(dto);
+            return Ok(Reservation);
+        }
+
+        [Authorize(Policy = nameof(ApplicationPermissionCode.ConfirmReservation))]
         // POST: api/reservations/confirm/{id}
         [HttpPost("confirm/{id}")]
         public async Task<IActionResult> ConfirmReservation(int id)
@@ -50,6 +68,7 @@ namespace RentCar.API.Controllers
             return Ok(result.Data);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.CancelReservation))]
         // POST: api/reservations/cancel/{id}
         [HttpPost("cancel/{id}")]
         public async Task<IActionResult> CancelReservation(int id)
@@ -93,6 +112,26 @@ namespace RentCar.API.Controllers
                 return NotFound();
 
             return Ok(reservation);
+        }
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetReservation))]
+        // Qo‘shimcha: GetById endpointi CreatedAtAction uchun
+        [HttpGet]
+        public async Task<IActionResult> GetReservation()
+        {
+            var reservation = await _reservationService.GetAllAsync();
+            if (reservation == null)
+                return NotFound();
+
+            return Ok(reservation);
+        }
+        [Authorize(Policy = nameof(ApplicationPermissionCode.DeleteReservation))]
+        // Qo‘shimcha: GetById endpointi CreatedAtAction uchun
+        [HttpDelete]
+        public async Task<IActionResult> DeleteReservation(int id)
+        {            
+            var reservation = await _reservationService.DeleteAsync(id);
+
+            return NoContent();
         }
 
         // Token ichidan userId olish uchun yordamchi metod

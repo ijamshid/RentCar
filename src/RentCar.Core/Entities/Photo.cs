@@ -2,7 +2,7 @@
 
 namespace RentCar.Core.Entities
 {
-    public class Image:BaseEntity
+    public class Photo:BaseEntity
     {
         public int Id { get; set; }
         public int CarId { get; set; } // Foreign key to Car

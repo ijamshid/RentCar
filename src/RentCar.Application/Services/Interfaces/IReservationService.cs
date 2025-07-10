@@ -1,4 +1,5 @@
-﻿using RentCar.Application.DTOs;
+﻿using RentCar.Application.Models.Car;
+using RentCar.Application.Models.Reservation;
 
 namespace RentCar.Application.Services.Interfaces
 {

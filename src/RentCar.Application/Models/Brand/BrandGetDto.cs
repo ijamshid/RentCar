@@ -1,4 +1,4 @@
-﻿namespace RentCar.Application.DTOs
+﻿namespace RentCar.Application.Models.Brand
 {
     public class BrandGetDto
     {

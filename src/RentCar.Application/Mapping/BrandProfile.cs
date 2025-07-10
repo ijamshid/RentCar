@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.Brand;
 using RentCar.Core.Entities;
 using System;
 using System.Collections.Generic;

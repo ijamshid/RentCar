@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.Car;
 using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
 
@@ -18,6 +18,14 @@ namespace RentCar.API.Controllers
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var cars = await carService.GetByIdAsync(id);
+            return Ok(cars);
+        }
+
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetCar))]
+        [HttpGet("by-brand/{brand}")]
+        public async Task<IActionResult> GetByBrand([FromRoute] string brand)
+        {
+            var cars = await carService.GetByBrand(brand);
             return Ok(cars);
         }
         [Authorize(Policy = nameof(ApplicationPermissionCode.GetCar))]

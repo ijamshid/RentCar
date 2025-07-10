@@ -8,7 +8,8 @@
         Car,
         Brand,
         Reservation,
-        Rating
+        Rating,
+        Photo
 
 
     }

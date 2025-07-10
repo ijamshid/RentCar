@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Minio;
+using Rentcar.Application.Services.Implementation;
+using RentCar.Application.Common;
 using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Helpers.PasswordHasher;
 using RentCar.Application.Helpers.PasswordHashers;
@@ -24,6 +27,10 @@ namespace RentCar.Application
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IMinioClient, MinioClient>();
+            services.AddScoped<MinioSettings>();
             services.AddHttpContextAccessor();
             
 

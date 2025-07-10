@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using RentCar.Application.DTOs;
 using RentCar.Application.Helpers.GenerateJWT;
+using RentCar.Application.Models.User2;
 using RentCar.Application.Models.Users;
 using RentCar.Application.Services.Impl;
 using RentCar.Application.Services.Interfaces;

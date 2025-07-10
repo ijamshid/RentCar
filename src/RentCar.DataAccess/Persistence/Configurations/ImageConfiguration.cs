@@ -4,9 +4,9 @@ using RentCar.Core.Entities;
 
 namespace RentCar.DataAccess.Persistence.Configurations
 {
-    public class ImageConfiguration : IEntityTypeConfiguration<Image>
+    public class PhotoConfiguration : IEntityTypeConfiguration<Photo>
     {
-        public void Configure(EntityTypeBuilder<Image> builder)
+        public void Configure(EntityTypeBuilder<Photo> builder)
         {
             builder.HasKey(i => i.Id);
 
@@ -27,7 +27,7 @@ namespace RentCar.DataAccess.Persistence.Configurations
 
             // Configure relationship with Car
             builder.HasOne(i => i.Car)
-                .WithMany(c => c.Images)
+                .WithMany(c => c.Photos)
                 .HasForeignKey(i => i.CarId)
                 .OnDelete(DeleteBehavior.Cascade); // If car is deleted, its images are deleted
         }

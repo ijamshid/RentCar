@@ -13,6 +13,7 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Brand> Brands { get; set; }
     public DbSet<Car> Cars { get; set; }
+    public DbSet<Photo> Photos { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Rating> Ratings { get; set; }
@@ -20,8 +21,8 @@ public class DatabaseContext : DbContext
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
-    private static readonly DateTime adminDob = new DateTime(1980, 1, 1,12,0,0, DateTimeKind.Utc);
-    private static readonly DateTime createdAt = new DateTime(2025, 7, 9, 12, 0, 0, DateTimeKind.Utc);
+    //private static readonly DateTime adminDob = new DateTime(1980, 1, 1,12,0,0, DateTimeKind.Utc);
+    //private static readonly DateTime createdAt = new DateTime(2025, 7, 9, 12, 0, 0, DateTimeKind.Utc);
 
 
 
@@ -113,25 +114,25 @@ public class DatabaseContext : DbContext
 
   //      builder.Entity<RolePermission>().HasData(staffPermissions);
 
-        string hash = "f2P+NdhTXkWiPo+5GiJf/9t1XjsYXOO9q1hE6ZQkvzE="; // Placeholder - replace with your actual generated Base64 hash
-        string salt = "a3f1d1e8-cd55-4b3c-9a12-8c3b3f9b2e4a"; // Placeholder - replace with your actual generated Base64 salt
+    //    string hash = "f2P+NdhTXkWiPo+5GiJf/9t1XjsYXOO9q1hE6ZQkvzE="; // Placeholder - replace with your actual generated Base64 hash
+    //    string salt = "a3f1d1e8-cd55-4b3c-9a12-8c3b3f9b2e4a"; // Placeholder - replace with your actual generated Base64 salt
 
-    builder.Entity<User>().HasData(
-            new User
-            {
-                Id = 1,
-                Firstname = "Jamshid",
-                Lastname = "Ismoilov",
-                Email = "admin@carrental.com",
-                PasswordHash = hash,
-                Salt = salt,
-                PhoneNumber = "555-123-4567",
-                DateOfBirth = adminDob,
-                IsActive = true,
-                IsVerified = true,
-                CreatedAt = createdAt
-            }
-        );
+    //builder.Entity<User>().HasData(
+    //        new User
+    //        {
+    //            Id = 1,
+    //            Firstname = "Jamshid",
+    //            Lastname = "Ismoilov",
+    //            Email = "admin@carrental.com",
+    //            PasswordHash = hash,
+    //            Salt = salt,
+    //            PhoneNumber = "555-123-4567",
+    //            DateOfBirth = adminDob,
+    //            IsActive = true,
+    //            IsVerified = true,
+    //            CreatedAt = createdAt
+    //        }
+    //    );
         //Assign Admin Role to Primary Admin User
         //builder.Entity<UserRole>().HasData(
         //     new UserRole { UserId = 1, RoleId = 1 } // Link Primary Admin (Id 1) to Admin Role (Id 1)

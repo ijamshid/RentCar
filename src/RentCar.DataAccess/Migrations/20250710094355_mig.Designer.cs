@@ -12,7 +12,7 @@ using RentCar.DataAccess.Persistence;
 namespace RentCar.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250709170536_mig")]
+    [Migration("20250710094355_mig")]
     partial class mig
     {
         /// <inheritdoc />
@@ -155,50 +155,6 @@ namespace RentCar.DataAccess.Migrations
                     b.ToTable("cars", (string)null);
                 });
 
-            modelBuilder.Entity("RentCar.Core.Entities.Image", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AltText")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("alt_text");
-
-                    b.Property<int>("CarId")
-                        .HasColumnType("integer")
-                        .HasColumnName("car_id");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("integer")
-                        .HasColumnName("order");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("uploaded_at")
-                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("url");
-
-                    b.HasKey("Id")
-                        .HasName("pk_image");
-
-                    b.HasIndex("CarId")
-                        .HasDatabaseName("ix_image_car_id");
-
-                    b.ToTable("image", (string)null);
-                });
-
             modelBuilder.Entity("RentCar.Core.Entities.Payment", b =>
                 {
                     b.Property<int>("Id")
@@ -309,6 +265,50 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_permissions_permission_group_id");
 
                     b.ToTable("permissions", (string)null);
+                });
+
+            modelBuilder.Entity("RentCar.Core.Entities.Photo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AltText")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("alt_text");
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("integer")
+                        .HasColumnName("car_id");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer")
+                        .HasColumnName("order");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("uploaded_at")
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("url");
+
+                    b.HasKey("Id")
+                        .HasName("pk_photos");
+
+                    b.HasIndex("CarId")
+                        .HasDatabaseName("ix_photos_car_id");
+
+                    b.ToTable("photos", (string)null);
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Rating", b =>
@@ -543,22 +543,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 7, 9, 12, 0, 0, 0, DateTimeKind.Utc),
-                            DateOfBirth = new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@carrental.com",
-                            Firstname = "Jamshid",
-                            IsActive = true,
-                            IsVerified = true,
-                            Lastname = "Ismoilov",
-                            PasswordHash = "f2P+NdhTXkWiPo+5GiJf/9t1XjsYXOO9q1hE6ZQkvzE=",
-                            PhoneNumber = "555-123-4567",
-                            Salt = "a3f1d1e8-cd55-4b3c-9a12-8c3b3f9b2e4a"
-                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.UserRole", b =>
@@ -625,18 +609,6 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("Brand");
                 });
 
-            modelBuilder.Entity("RentCar.Core.Entities.Image", b =>
-                {
-                    b.HasOne("RentCar.Core.Entities.Car", "Car")
-                        .WithMany("Images")
-                        .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_image_cars_car_id");
-
-                    b.Navigation("Car");
-                });
-
             modelBuilder.Entity("RentCar.Core.Entities.Payment", b =>
                 {
                     b.HasOne("RentCar.Core.Entities.Reservation", "Reservation")
@@ -668,6 +640,18 @@ namespace RentCar.DataAccess.Migrations
                         .HasConstraintName("fk_permissions_permission_group_permission_group_id");
 
                     b.Navigation("PermissionGroup");
+                });
+
+            modelBuilder.Entity("RentCar.Core.Entities.Photo", b =>
+                {
+                    b.HasOne("RentCar.Core.Entities.Car", "Car")
+                        .WithMany("Photos")
+                        .HasForeignKey("CarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_photos_cars_car_id");
+
+                    b.Navigation("Car");
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Rating", b =>
@@ -766,7 +750,7 @@ namespace RentCar.DataAccess.Migrations
 
             modelBuilder.Entity("RentCar.Core.Entities.Car", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Photos");
 
                     b.Navigation("Ratings");
 

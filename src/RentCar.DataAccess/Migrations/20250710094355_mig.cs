@@ -171,7 +171,7 @@ namespace RentCar.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "image",
+                name: "photos",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
@@ -184,9 +184,9 @@ namespace RentCar.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_image", x => x.id);
+                    table.PrimaryKey("pk_photos", x => x.id);
                     table.ForeignKey(
-                        name: "fk_image_cars_car_id",
+                        name: "fk_photos_cars_car_id",
                         column: x => x.car_id,
                         principalTable: "cars",
                         principalColumn: "id",
@@ -309,11 +309,6 @@ namespace RentCar.DataAccess.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.InsertData(
-                table: "users",
-                columns: new[] { "id", "created_at", "date_of_birth", "email", "firstname", "is_active", "is_verified", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
-                values: new object[] { 1, new DateTime(2025, 7, 9, 12, 0, 0, 0, DateTimeKind.Utc), new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), "admin@carrental.com", "Jamshid", true, true, "Ismoilov", "f2P+NdhTXkWiPo+5GiJf/9t1XjsYXOO9q1hE6ZQkvzE=", "555-123-4567", null, "a3f1d1e8-cd55-4b3c-9a12-8c3b3f9b2e4a" });
-
             migrationBuilder.CreateIndex(
                 name: "ix_brands_name",
                 table: "brands",
@@ -330,11 +325,6 @@ namespace RentCar.DataAccess.Migrations
                 table: "cars",
                 column: "plate_number",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_image_car_id",
-                table: "image",
-                column: "car_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_payments_reservation_id",
@@ -363,6 +353,11 @@ namespace RentCar.DataAccess.Migrations
                 name: "ix_permissions_permission_group_id",
                 table: "permissions",
                 column: "permission_group_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_photos_car_id",
+                table: "photos",
+                column: "car_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_ratings_car_id_user_id",
@@ -412,10 +407,10 @@ namespace RentCar.DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "image");
+                name: "payments");
 
             migrationBuilder.DropTable(
-                name: "payments");
+                name: "photos");
 
             migrationBuilder.DropTable(
                 name: "ratings");

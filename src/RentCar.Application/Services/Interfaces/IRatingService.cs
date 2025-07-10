@@ -1,4 +1,4 @@
-﻿using RentCar.Application.DTOs;
+﻿using RentCar.Application.Models.Rating;
 
 namespace RentCar.Application.Services.Interfaces
 {
@@ -11,6 +11,5 @@ namespace RentCar.Application.Services.Interfaces
         Task<bool> UpdateAsync(RatingUpdateDto dto);
         Task<bool> DeleteAsync(int id);
 
-        Task<bool> RateCarAsync(RatingCreateDto dto, int userId);
     }
 }

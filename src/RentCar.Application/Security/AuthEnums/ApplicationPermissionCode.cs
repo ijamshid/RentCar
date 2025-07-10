@@ -25,12 +25,6 @@ public enum ApplicationPermissionCode
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Permission, "Get Permissions")]
     GetPermissions,
-    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Permission, "Create Permissions")]
-    CreatePermissions,
-    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Permission, "Update Permissions")]
-    UpdatePermissions,
-    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Permission, "Delete Permissions")]
-    DeletePermissions,
 
     #endregion
     #region Role
@@ -75,6 +69,10 @@ public enum ApplicationPermissionCode
     GetReservation,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Create Reservation")]
     CreateReservation,
+    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Confirm Reservation")]
+    ConfirmReservation,
+    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Cancel Reservation")]
+    CancelReservation,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Update Reservation")]
     UpdateReservation,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Delete Reservation")]
@@ -92,6 +90,18 @@ public enum ApplicationPermissionCode
     UpdateRating,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Rating, "Delete Rating")]
     DeleteRating,
+
+    #endregion
+    #region Photo
+
+    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Photo, "Get Photo")]
+    GetPhoto,
+    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Photo, "Create Photo")]
+    CreatePhoto,
+    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Photo, "Update Photo")]
+    UpdatePhoto,
+    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Photo, "Delete Photo")]
+    DeletePhoto,
 
     #endregion
 

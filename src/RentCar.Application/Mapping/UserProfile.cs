@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.Car;
+using RentCar.Application.Models.User2;
 using RentCar.Core.Entities;
 
 namespace RentCar.Application.Mapping
