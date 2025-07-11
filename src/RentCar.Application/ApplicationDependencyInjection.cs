@@ -28,7 +28,7 @@ namespace RentCar.Application
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPhotoService, PhotoService>();
-            services.AddScoped<IFileStorageService, FileStorageService>();
+            //services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IMinioClient, MinioClient>();
             services.AddScoped<MinioSettings>();
             services.AddHttpContextAccessor();

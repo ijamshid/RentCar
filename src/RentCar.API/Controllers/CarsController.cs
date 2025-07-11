@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.Models.Car;
 using RentCar.Application.Security.AuthEnums;
+using RentCar.Application.Services;
 using RentCar.Application.Services.Interfaces;
 
 namespace RentCar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CarsController(ICarService carService) : ControllerBase
+    public class CarsController(ICarService carService, IFileStorageService storageService) : ControllerBase
     {
        
 
@@ -38,8 +39,9 @@ namespace RentCar.API.Controllers
 
         [Authorize(Policy = nameof(ApplicationPermissionCode.CreateCar))]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CarCreateDto dto)
+        public async Task<IActionResult> Create([FromForm] CarCreateDto dto)
         {
+
             await carService.CreateAsync(dto);
             return Created();
         }

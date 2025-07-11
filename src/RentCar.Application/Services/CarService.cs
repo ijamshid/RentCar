@@ -14,19 +14,41 @@ namespace RentCar.Application.Services
         private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
+        private readonly IFileStorageService _storageService;
 
-        public CarService(DatabaseContext context, IMapper mapper, IMemoryCache cache)
+        public CarService(DatabaseContext context, IMapper mapper, IMemoryCache cache, IFileStorageService storageService)
         {
             _context = context;
             _mapper = mapper;
             _cache = cache;
+            _storageService = storageService;
         }
+
+
 
         public async Task CreateAsync(CarCreateDto dto)
         {
             var car = _mapper.Map<Car>(dto);
             await _context.Cars.AddAsync(car);
             await _context.SaveChangesAsync();
+
+            string bucket = "car-photos";
+
+            foreach (var formFile in dto.Photos)
+            {
+                if (formFile.Length > 0)
+                {
+                    var objectName = $"{car.Id}/{Guid.NewGuid()}_{formFile.FileName}";
+                    using var stream = formFile.OpenReadStream();
+
+                    await _storageService.UploadFileAsync(bucket, objectName, stream, formFile.ContentType);
+
+                    car.Photos.Add(new CarPhoto
+                    {
+                        ObjectName = objectName // Save only name
+                    });
+                }
+            }
 
             _cache.Remove("cars"); // invalidate cache
         }

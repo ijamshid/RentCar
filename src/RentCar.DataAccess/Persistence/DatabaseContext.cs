@@ -13,6 +13,7 @@ public class DatabaseContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Brand> Brands { get; set; }
     public DbSet<Car> Cars { get; set; }
+    public DbSet<CarPhoto> CarPhotos { get; set; }
     public DbSet<Photo> Photos { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Payment> Payments { get; set; }

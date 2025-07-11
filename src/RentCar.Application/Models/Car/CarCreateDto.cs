@@ -1,4 +1,6 @@
-﻿using RentCar.Core.Enums;
+﻿using Microsoft.AspNetCore.Http;
+using RentCar.Core.Entities;
+using RentCar.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace RentCar.Application.Models.Car
@@ -22,5 +24,7 @@ namespace RentCar.Application.Models.Car
         public string Color { get; set; }
 
         public string Description { get; set; }
+
+        public ICollection<IFormFile> Photos { get; set; }
     }
 }
