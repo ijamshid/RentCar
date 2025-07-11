@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RentCar.DataAccess.Persistence;
@@ -11,9 +12,11 @@ using RentCar.DataAccess.Persistence;
 namespace RentCar.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20250710154639_add1")]
+    partial class add1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -196,33 +199,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_cars_plate_number");
 
                     b.ToTable("cars", (string)null);
-                });
-
-            modelBuilder.Entity("RentCar.Core.Entities.CarPhoto", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CarId")
-                        .HasColumnType("integer")
-                        .HasColumnName("car_id");
-
-                    b.Property<string>("ObjectName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("object_name");
-
-                    b.HasKey("Id")
-                        .HasName("pk_car_photos");
-
-                    b.HasIndex("CarId")
-                        .HasDatabaseName("ix_car_photos_car_id");
-
-                    b.ToTable("car_photos", (string)null);
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Payment", b =>
@@ -1243,18 +1219,6 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("Brand");
                 });
 
-            modelBuilder.Entity("RentCar.Core.Entities.CarPhoto", b =>
-                {
-                    b.HasOne("RentCar.Core.Entities.Car", "Car")
-                        .WithMany("Photos")
-                        .HasForeignKey("CarId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_car_photos_cars_car_id");
-
-                    b.Navigation("Car");
-                });
-
             modelBuilder.Entity("RentCar.Core.Entities.Payment", b =>
                 {
                     b.HasOne("RentCar.Core.Entities.Reservation", "Reservation")
@@ -1291,7 +1255,7 @@ namespace RentCar.DataAccess.Migrations
             modelBuilder.Entity("RentCar.Core.Entities.Photo", b =>
                 {
                     b.HasOne("RentCar.Core.Entities.Car", "Car")
-                        .WithMany()
+                        .WithMany("Photos")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()

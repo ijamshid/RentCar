@@ -14,17 +14,14 @@ namespace RentCar.Application.Mapping
 {
     public class CarProfile : Profile
     {
-        public CarProfile(IOptions<MinioSettings> settings)
+        public CarProfile()
         {
-            var minioEndpoint = settings.Value.Endpoint;
-            var bucket = "car-photos";
-
-            CreateMap<CarCreateDto, Car>();
+            Console.WriteLine("CarProfile loaded!");
+            CreateMap<CarCreateDto, Car>()
+                .ForMember(dest => dest.Photos, opt => opt.Ignore());
             CreateMap<Car, CarGetDto>()
                 .ForMember(dest => dest.ImageUrls,
-                           opt => opt.MapFrom(src =>
-                           src.Photos.Select(p => $"http://{minioEndpoint}/{bucket}/{p.ObjectName}")
-                           ));
+                           opt => opt.Ignore());
             CreateMap<UpdateBrandDto, Car>();
         }
     }

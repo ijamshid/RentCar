@@ -14,9 +14,6 @@ namespace RentCar.Application.Mapping
                 .ForMember(dest => dest.PasswordHash, opt => opt.Ignore()); // password hash controllerda qilamiz
             CreateMap<UserUpdateDto, User>();
 
-            CreateMap<CarCreateDto, Car>();
-            CreateMap<Car, CarGetDto>();
-            CreateMap<CarUpdateDto, Car>();
         }
     }
 }

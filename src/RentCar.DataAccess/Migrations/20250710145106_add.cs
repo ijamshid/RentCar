@@ -4,10 +4,12 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace RentCar.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class mig : Migration
+    public partial class add : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,7 +50,7 @@ namespace RentCar.DataAccess.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
@@ -128,12 +130,12 @@ namespace RentCar.DataAccess.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    short_name = table.Column<string>(type: "text", nullable: false),
+                    short_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     permission_group_id = table.Column<int>(type: "integer", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true, defaultValueSql: "NOW() AT TIME ZONE 'UTC'")
                 },
                 constraints: table =>
                 {
@@ -143,7 +145,7 @@ namespace RentCar.DataAccess.Migrations
                         column: x => x.permission_group_id,
                         principalTable: "permission_group",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -307,6 +309,132 @@ namespace RentCar.DataAccess.Migrations
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "permission_group",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { 1, "User Management" },
+                    { 2, "Role Management" },
+                    { 3, "Car Management" },
+                    { 4, "Brand Management" },
+                    { 5, "Reservation Management" },
+                    { 6, "Rating Management" },
+                    { 7, "Photo Management" },
+                    { 8, "Permission Management" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "roles",
+                columns: new[] { "id", "description", "name" },
+                values: new object[,]
+                {
+                    { 1, "Full system access", "Admin" },
+                    { 2, "Standard customer role", "User" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "users",
+                columns: new[] { "id", "created_at", "date_of_birth", "email", "firstname", "is_active", "is_verified", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
+                values: new object[] { 1, new DateTime(2025, 7, 9, 12, 0, 0, 0, DateTimeKind.Utc), new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), "ijamshid007@gmail.com", "Jamshid", true, true, "Ismoilov", "cf1flI7nX9SGjdpZXcO91if/0mVnWHQv+24I3WReFX4=", "+998901234567", null, "da8286d0-09f9-4be7-91b3-3a8c249c13b2" });
+
+            migrationBuilder.InsertData(
+                table: "permissions",
+                columns: new[] { "id", "description", "name", "permission_group_id", "short_name" },
+                values: new object[,]
+                {
+                    { 1, "User Create", "UserCreate", 1, "UserCreate" },
+                    { 2, "User Read", "UserRead", 1, "UserRead" },
+                    { 3, "User Update", "UserUpdate", 1, "UserUpdate" },
+                    { 4, "User Delete", "UserDelete", 1, "UserDelete" },
+                    { 5, "Get Role", "GetRole", 2, "GetRole" },
+                    { 6, "Create Role", "CreateRole", 2, "CreateRole" },
+                    { 7, "Update Role", "UpdateRole", 2, "UpdateRole" },
+                    { 8, "Delete Role", "DeleteRole", 2, "DeleteRole" },
+                    { 9, "Get Car", "GetCar", 3, "GetCar" },
+                    { 10, "Create Car", "CreateCar", 3, "CreateCar" },
+                    { 11, "Update Car", "UpdateCar", 3, "UpdateCar" },
+                    { 12, "Delete Car", "DeleteCar", 3, "DeleteCar" },
+                    { 13, "Get Brand", "GetBrand", 4, "GetBrand" },
+                    { 14, "Create Brand", "CreateBrand", 4, "CreateBrand" },
+                    { 15, "Update Brand", "UpdateBrand", 4, "UpdateBrand" },
+                    { 16, "Delete Brand", "DeleteBrand", 4, "DeleteBrand" },
+                    { 17, "Get Reservation", "GetReservation", 5, "GetReservation" },
+                    { 18, "Create Reservation", "CreateReservation", 5, "CreateReservation" },
+                    { 19, "Confirm Reservation", "ConfirmReservation", 5, "ConfirmReservation" },
+                    { 20, "Cancel Reservation", "CancelReservation", 5, "CancelReservation" },
+                    { 21, "Update Reservation", "UpdateReservation", 5, "UpdateReservation" },
+                    { 22, "Delete Reservation", "DeleteReservation", 5, "DeleteReservation" },
+                    { 23, "Get Rating", "GetRating", 6, "GetRating" },
+                    { 24, "Create Rating", "CreateRating", 6, "CreateRating" },
+                    { 25, "Update Rating", "UpdateRating", 6, "UpdateRating" },
+                    { 26, "Delete Rating", "DeleteRating", 6, "DeleteRating" },
+                    { 27, "Get Photo", "GetPhoto", 7, "GetPhoto" },
+                    { 28, "Create Photo", "CreatePhoto", 7, "CreatePhoto" },
+                    { 29, "Update Photo", "UpdatePhoto", 7, "UpdatePhoto" },
+                    { 30, "Delete Photo", "DeletePhoto", 7, "DeletePhoto" },
+                    { 31, "Get Permissions", "GetPermissions", 8, "GetPermissions" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "user_roles",
+                columns: new[] { "role_id", "user_id" },
+                values: new object[] { 1, 1 });
+
+            migrationBuilder.InsertData(
+                table: "role_permissions",
+                columns: new[] { "permission_id", "role_id" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 2, 1 },
+                    { 3, 1 },
+                    { 4, 1 },
+                    { 5, 1 },
+                    { 6, 1 },
+                    { 7, 1 },
+                    { 8, 1 },
+                    { 9, 1 },
+                    { 10, 1 },
+                    { 11, 1 },
+                    { 12, 1 },
+                    { 13, 1 },
+                    { 14, 1 },
+                    { 15, 1 },
+                    { 16, 1 },
+                    { 17, 1 },
+                    { 18, 1 },
+                    { 19, 1 },
+                    { 20, 1 },
+                    { 21, 1 },
+                    { 22, 1 },
+                    { 23, 1 },
+                    { 24, 1 },
+                    { 25, 1 },
+                    { 26, 1 },
+                    { 27, 1 },
+                    { 28, 1 },
+                    { 29, 1 },
+                    { 30, 1 },
+                    { 31, 1 },
+                    { 5, 2 },
+                    { 9, 2 },
+                    { 13, 2 },
+                    { 17, 2 },
+                    { 18, 2 },
+                    { 20, 2 },
+                    { 21, 2 },
+                    { 22, 2 },
+                    { 23, 2 },
+                    { 24, 2 },
+                    { 25, 2 },
+                    { 26, 2 },
+                    { 27, 2 },
+                    { 28, 2 },
+                    { 29, 2 },
+                    { 30, 2 }
                 });
 
             migrationBuilder.CreateIndex(
