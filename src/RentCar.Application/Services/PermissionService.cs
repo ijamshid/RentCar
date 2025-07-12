@@ -75,6 +75,7 @@ namespace RentCar.Application.Services
                         Id = p.Id,
                         ShortName = p.ShortName, // Permission.ShortName
                         FullName = p.Name,   // Permission.FullName
+                        Description=p.Description,
                         GroupName = p.PermissionGroup.Name // PermissionGroup.Name
                     }).OrderBy(p => p.ShortName).ToList()
                 })

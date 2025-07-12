@@ -30,6 +30,7 @@ namespace RentCar.Application
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPhotoService, PhotoService>();
+            services.AddScoped<IPermissionService, PermissionService>();
             //services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IMinioClient, MinioClient>();
             services.AddScoped<MinioSettings>();

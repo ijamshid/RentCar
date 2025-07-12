@@ -84,21 +84,21 @@ namespace RentCar.API.Controllers
 
         /// <summary>
         /// Faqat ma’lum permission egalariga ochiq
-        /// </summary>
-        [HttpGet("secret-data")]
-        public IActionResult GetSecretData()
-        {
-            if (!_authService.IsAuthenticated)
-                return Unauthorized("Siz login qilmagansiz.");
+        ///// </summary>
+        //[HttpGet("secret-data")]
+        //public IActionResult GetSecretData()
+        //{
+        //    if (!_authService.IsAuthenticated)
+        //        return Unauthorized("Siz login qilmagansiz.");
 
-            if (!_authService.HasPermission("VIEW_SECRET_DATA"))
-                return Forbid("Sizda ushbu resursga ruxsat yo‘q.");
+        //    if (!_authService.HasPermission("VIEW_SECRET_DATA"))
+        //        return Forbid("Sizda ushbu resursga ruxsat yo‘q.");
 
-            return Ok(new
-            {
-                message = "Bu maxfiy ma’lumot faqat ruxsati bor foydalanuvchilar uchun."
-            });
-        }
+        //    return Ok(new
+        //    {
+        //        message = "Bu maxfiy ma’lumot faqat ruxsati bor foydalanuvchilar uchun."
+        //    });
+        //}
     }
 
     // OTP yuborish uchun request model
