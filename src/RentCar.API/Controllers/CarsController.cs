@@ -37,6 +37,18 @@ namespace RentCar.API.Controllers
             return Ok(cars);
         }
 
+        [HttpGet("photos/{objectName}")]
+        public async Task<IActionResult> GetPhoto([FromRoute] string objectName)
+        {
+            string bucket = "car-photos";
+
+            var stream = await storageService.DownloadFileAsync(bucket, objectName);
+            if (stream == null)
+                return NotFound();
+
+            return File(stream, "image/jpeg");
+        }
+
         [Authorize(Policy = nameof(ApplicationPermissionCode.CreateCar))]
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CarCreateDto dto)

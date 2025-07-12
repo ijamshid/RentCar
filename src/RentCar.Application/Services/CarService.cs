@@ -89,15 +89,15 @@ namespace RentCar.Application.Services
                 .ToListAsync();
 
             var result = _mapper.Map<IEnumerable<CarGetDto>>(cars);
-            var resultLits = result.ToList();
+            var resultList = result.ToList();
 
-            for (int i = 0; i < resultLits.Count(); i++)
+            for (int i = 0; i < resultList.Count(); i++)
             {
                 var carEntity = cars[i];
-                var dto = resultLits[i];
+                var dto = resultList[i];
 
-                dto.ImageUrls = carEntity.Photos
-                    .Select(p => $"http://{_minioSettings.Endpoint}/car-photos/{p.ObjectName}")
+                dto.ImageGuids = carEntity.Photos?
+                    .Select(p => p.ObjectName)
                     .ToList();
             }
 
@@ -159,9 +159,9 @@ namespace RentCar.Application.Services
 
             var result = _mapper.Map<CarGetDto>(car);
 
-            result.ImageUrls = car.Photos
-    .Select(p => $"http://{_minioSettings.Endpoint}/car-photos/{p.ObjectName}")
-    .ToList();
+            result.ImageGuids = car.Photos?
+                    .Select(p => p.ObjectName) 
+                    .ToList();
 
             var cacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));

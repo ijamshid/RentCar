@@ -20,7 +20,7 @@ namespace RentCar.Application.Mapping
             CreateMap<CarCreateDto, Car>()
                 .ForMember(dest => dest.Photos, opt => opt.Ignore());
             CreateMap<Car, CarGetDto>()
-                .ForMember(dest => dest.ImageUrls,
+                .ForMember(dest => dest.ImageGuids,
                            opt => opt.Ignore());
             CreateMap<UpdateBrandDto, Car>();
         }
