@@ -10,6 +10,7 @@ using RentCar.Application.Services.Impl;
 using RentCar.Application.Services.Interfaces;
 using SecureLoginApp.Application.Helpers.GenerateJwt;
 using SecureLoginApp.Application.Services.Impl;
+using System.Text.Json.Serialization;
 
 namespace RentCar.Application
 {
@@ -36,8 +37,12 @@ namespace RentCar.Application
             services.AddSingleton<IRabbitMQProducer, RabbitMQProducer>();
             services.AddHostedService<RabbitMQConsumer>();
             services.AddHttpContextAccessor();
-            
 
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                });
 
 
 
