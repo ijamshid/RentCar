@@ -21,7 +21,9 @@ namespace RentCar.Application.Mapping
                 .ForMember(dest => dest.Photos, opt => opt.Ignore());
             CreateMap<Car, CarGetDto>()
                 .ForMember(dest => dest.ImageGuids,
-                           opt => opt.Ignore());
+                           opt => opt.Ignore())
+                .ForMember(dest => dest.BrandName,
+                            opt => opt.MapFrom(src => src.Brand.Name));
             CreateMap<UpdateBrandDto, Car>();
         }
     }
