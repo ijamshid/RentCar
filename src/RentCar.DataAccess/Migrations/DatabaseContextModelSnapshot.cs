@@ -177,6 +177,10 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("plate_number");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
                     b.Property<int>("Year")
                         .HasColumnType("integer")
                         .HasColumnName("year");
@@ -192,6 +196,57 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_cars_plate_number");
 
                     b.ToTable("cars", (string)null);
+                });
+
+            modelBuilder.Entity("RentCar.Core.Entities.CarPhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("integer")
+                        .HasColumnName("car_id");
+
+                    b.Property<string>("ObjectName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("object_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_car_photos");
+
+                    b.HasIndex("CarId")
+                        .HasDatabaseName("ix_car_photos_car_id");
+
+                    b.ToTable("car_photos", (string)null);
+                });
+
+            modelBuilder.Entity("RentCar.Core.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("product_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
+
+                    b.ToTable("orders", (string)null);
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Payment", b =>
@@ -346,6 +401,15 @@ namespace RentCar.DataAccess.Migrations
                             Name = "UserDelete",
                             PermissionGroupId = 1,
                             ShortName = "UserDelete"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Add Admin",
+                            Name = "AddAdmin",
+                            PermissionGroupId = 1,
+                            ShortName = "AA"
                         },
                         new
                         {
@@ -970,6 +1034,11 @@ namespace RentCar.DataAccess.Migrations
                         },
                         new
                         {
+                            RoleId = 1,
+                            PermissionId = 32
+                        },
+                        new
+                        {
                             RoleId = 2,
                             PermissionId = 5
                         },
@@ -1123,22 +1192,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2025, 7, 9, 12, 0, 0, 0, DateTimeKind.Utc),
-                            DateOfBirth = new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "ijamshid007@gmail.com",
-                            Firstname = "Jamshid",
-                            IsActive = true,
-                            IsVerified = true,
-                            Lastname = "Ismoilov",
-                            PasswordHash = "cf1flI7nX9SGjdpZXcO91if/0mVnWHQv+24I3WReFX4=",
-                            PhoneNumber = "+998901234567",
-                            Salt = "da8286d0-09f9-4be7-91b3-3a8c249c13b2"
-                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.UserRole", b =>
@@ -1158,13 +1211,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_user_roles_role_id");
 
                     b.ToTable("user_roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1
-                        });
                 });
 
             modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
@@ -1212,6 +1258,18 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("Brand");
                 });
 
+            modelBuilder.Entity("RentCar.Core.Entities.CarPhoto", b =>
+                {
+                    b.HasOne("RentCar.Core.Entities.Car", "Car")
+                        .WithMany("Photos")
+                        .HasForeignKey("CarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_car_photos_cars_car_id");
+
+                    b.Navigation("Car");
+                });
+
             modelBuilder.Entity("RentCar.Core.Entities.Payment", b =>
                 {
                     b.HasOne("RentCar.Core.Entities.Reservation", "Reservation")
@@ -1248,7 +1306,7 @@ namespace RentCar.DataAccess.Migrations
             modelBuilder.Entity("RentCar.Core.Entities.Photo", b =>
                 {
                     b.HasOne("RentCar.Core.Entities.Car", "Car")
-                        .WithMany("Photos")
+                        .WithMany()
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()

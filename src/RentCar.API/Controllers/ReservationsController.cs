@@ -52,22 +52,6 @@ namespace RentCar.API.Controllers
             return Ok(Reservation);
         }
 
-        [Authorize(Policy = nameof(ApplicationPermissionCode.ConfirmReservation))]
-        // POST: api/reservations/confirm/{id}
-        [HttpPost("confirm/{id}")]
-        public async Task<IActionResult> ConfirmReservation(int id)
-        {
-            var userId = GetUserId();
-            if (userId == null)
-                return Unauthorized();
-
-            var result = await _reservationService.ConfirmReservationAsync(id, userId);
-            if (!result.IsSuccess)
-                return BadRequest(result.ErrorMessage);
-
-            return Ok(result.Data);
-        }
-
         [Authorize(Policy = nameof(ApplicationPermissionCode.CancelReservation))]
         // POST: api/reservations/cancel/{id}
         [HttpPost("cancel/{id}")]

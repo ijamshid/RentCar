@@ -7,13 +7,13 @@ using RentCar.Application.Services;
 
 namespace Rentcar.Application.Services.Implementation;
 
-public class FileStorageService : IFileStorageService
+public class MinioFileStorageService : IFileStorageService
 {
     private readonly IMinioClient _minioClient;
     private readonly MinioSettings _minioSettings;
 
     // Dependency Injection orqali IMinioClient va MinioSettings ni qabul qiladi
-    public FileStorageService(IMinioClient minioClient, IOptions<MinioSettings> minioSettings)
+    public MinioFileStorageService(IMinioClient minioClient, IOptions<MinioSettings> minioSettings)
     {
         _minioClient = minioClient;
         _minioSettings = minioSettings.Value;
@@ -25,24 +25,24 @@ public class FileStorageService : IFileStorageService
         {
             // Agar bucket (saqlash joyi) mavjud bo'lmasa, uni yaratamiz
             bool found = await _minioClient.BucketExistsAsync(
-                new BucketExistsArgs().WithBucket(bucketName)
+              new BucketExistsArgs().WithBucket(bucketName)
             ).ConfigureAwait(false);
 
             if (!found)
             {
                 await _minioClient.MakeBucketAsync(
-                    new MakeBucketArgs().WithBucket(bucketName)
+                  new MakeBucketArgs().WithBucket(bucketName)
                 ).ConfigureAwait(false);
             }
 
             // Faylni Minio'ga yuklash
             await _minioClient.PutObjectAsync(
-                new PutObjectArgs()
-                    .WithBucket(bucketName)
-                    .WithObject(objectName)
-                    .WithStreamData(data) // Yuklanayotgan fayl stream'i
-                    .WithObjectSize(data.Length) // Faylning hajmi
-                    .WithContentType(contentType) // Faylning turi (masalan, "image/jpeg")
+              new PutObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(objectName)
+                .WithStreamData(data) // Yuklanayotgan fayl stream'i
+                .WithObjectSize(data.Length) // Faylning hajmi
+                .WithContentType(contentType) // Faylning turi (masalan, "image/jpeg")
             ).ConfigureAwait(false);
 
             // Yuklangan faylga to'g'ridan-to'g'ri kirish URL'ini qaytarish
@@ -68,13 +68,13 @@ public class FileStorageService : IFileStorageService
         {
             var memoryStream = new MemoryStream();
             await _minioClient.GetObjectAsync(
-                new GetObjectArgs()
-                    .WithBucket(bucketName)
-                    .WithObject(objectName)
-                    .WithCallbackStream(async (stream) => // Fayl streamini memoryStream ga nusxalash
-                    {
-                        await stream.CopyToAsync(memoryStream);
-                    })
+              new GetObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(objectName)
+                .WithCallbackStream(async (stream) => // Fayl streamini memoryStream ga nusxalash
+                {
+                    await stream.CopyToAsync(memoryStream);
+                })
             ).ConfigureAwait(false);
 
             memoryStream.Position = 0; // Streamni boshiga qaytarish, chunki undan o'qish mumkin bo'lishi uchun
@@ -86,16 +86,15 @@ public class FileStorageService : IFileStorageService
             throw;
         }
     }
-
     public async Task<bool> FileExistsAsync(string bucketName, string objectName)
     {
         try
         {
             // StatObjectAsync fayl haqida ma'lumotni oladi, agar mavjud bo'lmasa xato tashlaydi
             await _minioClient.StatObjectAsync(
-                new StatObjectArgs()
-                    .WithBucket(bucketName)
-                    .WithObject(objectName)
+              new StatObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(objectName)
             ).ConfigureAwait(false);
             return true; // Fayl mavjud
         }
@@ -114,9 +113,9 @@ public class FileStorageService : IFileStorageService
         try
         {
             await _minioClient.RemoveObjectAsync(
-                new RemoveObjectArgs()
-                    .WithBucket(bucketName)
-                    .WithObject(objectName)
+              new RemoveObjectArgs()
+                .WithBucket(bucketName)
+                .WithObject(objectName)
             ).ConfigureAwait(false);
             return true;
         }
@@ -132,7 +131,7 @@ public class FileStorageService : IFileStorageService
         try
         {
             return await _minioClient.BucketExistsAsync(
-                new BucketExistsArgs().WithBucket(bucketName)
+              new BucketExistsArgs().WithBucket(bucketName)
             ).ConfigureAwait(false);
         }
         catch (MinioException e)
@@ -147,13 +146,13 @@ public class FileStorageService : IFileStorageService
         try
         {
             bool found = await _minioClient.BucketExistsAsync(
-                new BucketExistsArgs().WithBucket(bucketName)
+              new BucketExistsArgs().WithBucket(bucketName)
             ).ConfigureAwait(false);
 
             if (!found)
             {
                 await _minioClient.MakeBucketAsync(
-                    new MakeBucketArgs().WithBucket(bucketName)
+                  new MakeBucketArgs().WithBucket(bucketName)
                 ).ConfigureAwait(false);
             }
         }

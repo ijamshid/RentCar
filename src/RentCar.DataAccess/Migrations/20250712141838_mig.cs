@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace RentCar.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class add : Migration
+    public partial class mig : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,6 +27,20 @@ namespace RentCar.DataAccess.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_brands", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "orders",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    product_name = table.Column<string>(type: "text", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_orders", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,7 +125,8 @@ namespace RentCar.DataAccess.Migrations
                     odometer = table.Column<int>(type: "integer", nullable: true),
                     color = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     description = table.Column<string>(type: "text", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'")
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
+                    status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -168,6 +183,26 @@ namespace RentCar.DataAccess.Migrations
                         name: "fk_user_roles_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "car_photos",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    object_name = table.Column<string>(type: "text", nullable: false),
+                    car_id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_car_photos", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_car_photos_cars_car_id",
+                        column: x => x.car_id,
+                        principalTable: "cars",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -336,11 +371,6 @@ namespace RentCar.DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "users",
-                columns: new[] { "id", "created_at", "date_of_birth", "email", "firstname", "is_active", "is_verified", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
-                values: new object[] { 1, new DateTime(2025, 7, 9, 12, 0, 0, 0, DateTimeKind.Utc), new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), "ijamshid007@gmail.com", "Jamshid", true, true, "Ismoilov", "cf1flI7nX9SGjdpZXcO91if/0mVnWHQv+24I3WReFX4=", "+998901234567", null, "da8286d0-09f9-4be7-91b3-3a8c249c13b2" });
-
-            migrationBuilder.InsertData(
                 table: "permissions",
                 columns: new[] { "id", "description", "name", "permission_group_id", "short_name" },
                 values: new object[,]
@@ -375,13 +405,9 @@ namespace RentCar.DataAccess.Migrations
                     { 28, "Create Photo", "CreatePhoto", 7, "CreatePhoto" },
                     { 29, "Update Photo", "UpdatePhoto", 7, "UpdatePhoto" },
                     { 30, "Delete Photo", "DeletePhoto", 7, "DeletePhoto" },
-                    { 31, "Get Permissions", "GetPermissions", 8, "GetPermissions" }
+                    { 31, "Get Permissions", "GetPermissions", 8, "GetPermissions" },
+                    { 32, "Add Admin", "AddAdmin", 1, "AA" }
                 });
-
-            migrationBuilder.InsertData(
-                table: "user_roles",
-                columns: new[] { "role_id", "user_id" },
-                values: new object[] { 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "role_permissions",
@@ -419,6 +445,7 @@ namespace RentCar.DataAccess.Migrations
                     { 29, 1 },
                     { 30, 1 },
                     { 31, 1 },
+                    { 32, 1 },
                     { 5, 2 },
                     { 9, 2 },
                     { 13, 2 },
@@ -442,6 +469,11 @@ namespace RentCar.DataAccess.Migrations
                 table: "brands",
                 column: "name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_car_photos_car_id",
+                table: "car_photos",
+                column: "car_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_cars_brand_id",
@@ -534,6 +566,12 @@ namespace RentCar.DataAccess.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "car_photos");
+
+            migrationBuilder.DropTable(
+                name: "orders");
+
             migrationBuilder.DropTable(
                 name: "payments");
 

@@ -26,10 +26,10 @@ namespace RentCar.DataAccess.Persistence.Configurations
                 .IsRequired();
 
             // Configure relationship with Car
-            builder.HasOne(i => i.Car)
-                .WithMany(c => c.Photos)
-                .HasForeignKey(i => i.CarId)
-                .OnDelete(DeleteBehavior.Cascade); // If car is deleted, its images are deleted
+            //builder.HasOne(i => i.Car)
+            //    .WithMany(c => c.)
+            //    .HasForeignKey(i => i.CarId)
+            //    .OnDelete(DeleteBehavior.Cascade); // If car is deleted, its images are deleted
         }
     }
 }

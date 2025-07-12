@@ -144,39 +144,6 @@ namespace RentCar.Application.Services
             return true;
         }
 
-        public async Task<ServiceResult<ReservationGetDto>> ConfirmReservationAsync(int reservationId, string userId)
-        {
-            var reservation = await _context.Reservations
-                .Include(r => r.Payment)
-                .FirstOrDefaultAsync(r => r.Id == reservationId);
-
-            if (reservation == null)
-                return ServiceResult<ReservationGetDto>.Fail("Reservation not found");
-
-            if (reservation.UserId != int.Parse(userId))
-                return ServiceResult<ReservationGetDto>.Fail("Unauthorized access");
-
-            if (reservation.Status != ReservationStatus.Pending)
-                return ServiceResult<ReservationGetDto>.Fail("Reservation cannot be confirmed");
-
-            reservation.Status = ReservationStatus.Confirmed;
-            reservation.LastModifiedAt = DateTime.UtcNow;
-
-            if (reservation.Payment != null)
-            {
-                reservation.Payment.Status = PaymentStatus.Completed;
-                reservation.Payment.PaymentDate = DateTime.UtcNow;
-            }
-
-            await _context.SaveChangesAsync();
-
-            var resultDto = _mapper.Map<ReservationGetDto>(reservation);
-            _cache.Remove("reservations");
-            _cache.Remove($"reservation_{reservation.Id}");
-
-            return ServiceResult<ReservationGetDto>.Success(resultDto);
-        }
-
         public async Task<ServiceResult<ReservationGetDto>> CancelReservationAsync(int reservationId, string userId)
         {
             var reservation = await _context.Reservations.FirstOrDefaultAsync(a => a.Id == reservationId);

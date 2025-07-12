@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using RentCar.Application.Helpers.GenerateJWT;
+using RentCar.Application.Helpers.PasswordHashers;
 using RentCar.Application.Models.User2;
 using RentCar.Application.Models.Users;
 using RentCar.Application.Services.Impl;
@@ -74,12 +75,21 @@ public class UserService : IUserService
     public async Task<UserGetDto> CreateAsync(UserCreateDto dto)
     {
         var user = _mapper.Map<User>(dto);
-
-        // Password hashing (masalan, BCrypt ishlatish mumkin)
-        user.PasswordHash = "s"; //BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        var hash = new PasswordHasher();
+        var salt=hash.GenerateSalt();
+        user.PasswordHash = hash.Encrypt(dto.Password, salt);
         user.IsActive = true;
+        user.Salt= salt;
+        string roleName = dto.IsAdmin ? "Admin" : "User";
 
         _context.Users.Add(user);
+        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+
+        _context.UserRoles.Add(new UserRole
+        {
+            UserId = user.Id,
+            RoleId = defaultRole.Id
+        });
         await _context.SaveChangesAsync();
 
         _cache.Remove("users"); // cache invalidation
@@ -94,6 +104,7 @@ public class UserService : IUserService
             return false;
 
         _mapper.Map(dto, user);
+
         await _context.SaveChangesAsync();
 
         _cache.Remove("users");

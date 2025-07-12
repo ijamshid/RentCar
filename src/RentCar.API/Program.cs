@@ -1,27 +1,30 @@
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Minio;
+using Rentcar.Application.Services.Implementation;
 using RentCar.Application;
 using RentCar.Application.Common;
 using RentCar.Application.Helpers;
 using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Security.AuthEnums;
+using RentCar.Application.Services;
 using RentCar.DataAccess;
 using RentCar.DataAccess.Persistence;
 using System.Text;
 using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://*:{port}");
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//builder.WebHost.UseUrls($"http://*:{port}");
 
 builder.Services.Configure<EmailConfiguration>(
     builder.Configuration.GetSection("EmailConfiguration"));
 builder.Services.Configure<JwtOption>(
     builder.Configuration.GetSection("JwtOption"));
 // Add services to the container.
+
+var config = builder.Configuration;
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -65,6 +68,27 @@ builder.Services.AddAuthorization(options =>
     }
 });
 
+builder.Services.AddSingleton<IFileStorageService, MinioFileStorageService>();
+builder.Services.Configure<MinioSettings>(config.GetSection("MinioSettings"));
+
+builder.Services.AddSingleton<IMinioClient>(sp =>
+{
+    var minioSettings = sp.GetRequiredService<IOptions<MinioSettings>>().Value;
+
+    // MinioClient obyektini yaratish
+    var client = new MinioClient()
+      .WithEndpoint(minioSettings.Endpoint)
+      .WithCredentials(minioSettings.AccessKey, minioSettings.SecretKey);
+
+    // Agar SSL yoqilgan bo'lsa
+    if (minioSettings.UseSsl)
+    {
+        client = client.WithSSL();
+    }
+
+    return client.Build(); // MinioClient ni qurish
+});
+
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -102,18 +126,18 @@ builder.Services.AddCors(options =>
   //builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
 var app = builder.Build();
 // Migratsiya
-using (var scope = app.Services.CreateScope())
-{
-    try
-    {
-        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-        await context.Database.MigrateAsync();
-    }
-    catch (Exception ex)
-    {
-        app.Logger.LogError(ex, "Migration failed.");
-    }
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    try
+//    {
+//        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+//        await context.Database.MigrateAsync();
+//    }
+//    catch (Exception ex)
+//    {
+//        app.Logger.LogError(ex, "Migration failed.");
+//    }
+//}
 
 
 app.UseSwagger();

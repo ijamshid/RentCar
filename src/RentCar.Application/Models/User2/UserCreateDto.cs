@@ -23,6 +23,7 @@ namespace RentCar.Application.Models.User2
         public string Password { get; set; }
         [Required]
         public DateTime? DateOfBirth { get; set; } // Nullable DateTime
+        public bool IsAdmin { get; set; }
 
     }
 

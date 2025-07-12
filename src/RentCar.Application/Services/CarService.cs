@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using RentCar.Application.Common;
 using RentCar.Application.Models.Car;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
-using System.Xml.Linq;
 
 namespace RentCar.Application.Services
 {
@@ -14,19 +16,49 @@ namespace RentCar.Application.Services
         private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
         private readonly IMemoryCache _cache;
+        private readonly IFileStorageService _storageService;
+        private readonly MinioSettings _minioSettings;
 
-        public CarService(DatabaseContext context, IMapper mapper, IMemoryCache cache)
+        public CarService(
+            DatabaseContext context,
+            IMapper mapper,
+            IMemoryCache cache,
+            IFileStorageService storageService,
+            IOptions<MinioSettings> settings)
         {
             _context = context;
             _mapper = mapper;
             _cache = cache;
+            _storageService = storageService;
+            _minioSettings = settings.Value;
         }
 
         public async Task CreateAsync(CarCreateDto dto)
         {
+            string bucket = "car-photos";
+
             var car = _mapper.Map<Car>(dto);
+            car.Photos = new List<CarPhoto>();
+
+            foreach (var formFile in dto.Photos ?? Enumerable.Empty<IFormFile>())
+            {
+                if (formFile.Length > 0)
+                {
+                    string objectName = $"{Guid.NewGuid()}_{formFile.FileName}";
+                    using var stream = formFile.OpenReadStream();
+
+                    await _storageService.UploadFileAsync(bucket, objectName, stream, formFile.ContentType);
+
+                    car.Photos.Add(new CarPhoto
+                    {
+                        ObjectName = objectName
+                    });
+                }
+            }
+
             await _context.Cars.AddAsync(car);
             await _context.SaveChangesAsync();
+
 
             _cache.Remove("cars"); // invalidate cache
         }
@@ -53,9 +85,21 @@ namespace RentCar.Application.Services
 
             var cars = await _context.Cars
                 .Include(c => c.Brand)
+                .Include(c => c.Photos)
                 .ToListAsync();
 
             var result = _mapper.Map<IEnumerable<CarGetDto>>(cars);
+            var resultList = result.ToList();
+
+            for (int i = 0; i < resultList.Count(); i++)
+            {
+                var carEntity = cars[i];
+                var dto = resultList[i];
+
+                dto.ImageGuids = carEntity.Photos?
+                    .Select(p => p.ObjectName)
+                    .ToList();
+            }
 
             var cacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
@@ -114,6 +158,10 @@ namespace RentCar.Application.Services
                 throw new KeyNotFoundException($"Car with ID {id} not found.");
 
             var result = _mapper.Map<CarGetDto>(car);
+
+            result.ImageGuids = car.Photos?
+                    .Select(p => p.ObjectName) 
+                    .ToList();
 
             var cacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));

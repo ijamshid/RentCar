@@ -1,4 +1,6 @@
-﻿using RentCar.Core.Enums;
+﻿using Microsoft.AspNetCore.Http;
+using RentCar.Core.Entities;
+using RentCar.Core.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace RentCar.Application.Models.Car
@@ -37,5 +39,7 @@ namespace RentCar.Application.Models.Car
 
         [StringLength(500, ErrorMessage = "Tavsif 500 ta belgidan oshmasligi kerak")]
         public string Description { get; set; }
+
+        public ICollection<IFormFile>? Photos { get; set; }
     }
 }

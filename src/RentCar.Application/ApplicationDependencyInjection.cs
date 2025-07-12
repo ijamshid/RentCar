@@ -9,6 +9,8 @@ using RentCar.Application.Services;
 using RentCar.Application.Services.Impl;
 using RentCar.Application.Services.Interfaces;
 using SecureLoginApp.Application.Helpers.GenerateJwt;
+using SecureLoginApp.Application.Services.Impl;
+using System.Text.Json.Serialization;
 
 namespace RentCar.Application
 {
@@ -26,14 +28,21 @@ namespace RentCar.Application
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IPhotoService, PhotoService>();
-            services.AddScoped<IFileStorageService, FileStorageService>();
+            //services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IMinioClient, MinioClient>();
             services.AddScoped<MinioSettings>();
+            services.AddSingleton<IRabbitMQProducer, RabbitMQProducer>();
+            services.AddHostedService<RabbitMQConsumer>();
             services.AddHttpContextAccessor();
-            
 
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                });
 
 
 
