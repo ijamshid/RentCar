@@ -34,8 +34,5 @@ namespace RentCar.Application.Models.Users
         [Required(ErrorMessage = "Telefon raqami kiritilishi shart.")]
         [Phone(ErrorMessage = "Telefon raqami noto‘g‘ri formatda.")]
         public string PhoneNumber { get; set; }
-
-        // isAdminSite odatda checkbox yoki flag sifatida keladi, validatsiya kerak emas.
-        public bool isAdminSite { get; set; }
     }
 }

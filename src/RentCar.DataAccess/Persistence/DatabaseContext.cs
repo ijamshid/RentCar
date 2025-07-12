@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Rent.Core.Entities;
 using RentCar.Core.Entities;
 using SecureLoginApp.Core.Entities;
@@ -25,8 +24,8 @@ public class DatabaseContext : DbContext
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
-    private static readonly DateTime adminDob = new DateTime(1980, 1, 1, 12, 0, 0, DateTimeKind.Utc);
-    private static readonly DateTime createdAt = new DateTime(2025, 7, 9, 12, 0, 0, DateTimeKind.Utc);
+    //private static readonly DateTime adminDob = new DateTime(1980, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+    //private static readonly DateTime createdAt = new DateTime(2025, 7, 9, 12, 0, 0, DateTimeKind.Utc);
 
 
 
@@ -54,6 +53,7 @@ public class DatabaseContext : DbContext
             new Permission { Id = 2, Name = "UserRead", Description = "User Read", ShortName = "UserRead", PermissionGroupId = 1 },
             new Permission { Id = 3, Name = "UserUpdate", Description = "User Update", ShortName = "UserUpdate", PermissionGroupId = 1 },
             new Permission { Id = 4, Name = "UserDelete", Description = "User Delete", ShortName = "UserDelete", PermissionGroupId = 1 },
+            new Permission { Id = 32, Name = "AddAdmin", Description = "Add Admin", ShortName = "AA", PermissionGroupId = 1 },
             // Role
             new Permission { Id = 5, Name = "GetRole", Description = "Get Role", ShortName = "GetRole", PermissionGroupId = 2 },
             new Permission { Id = 6, Name = "CreateRole", Description = "Create Role", ShortName = "CreateRole", PermissionGroupId = 2 },
@@ -97,7 +97,7 @@ public class DatabaseContext : DbContext
         );
 
         // Admin RolePermissions (barcha permissionlar)
-        var adminRolePermissions = Enumerable.Range(1, 31).Select(i => new RolePermission
+        var adminRolePermissions = Enumerable.Range(1, 32).Select(i => new RolePermission
         {
             RoleId = 1,
             PermissionId = i
@@ -105,31 +105,7 @@ public class DatabaseContext : DbContext
         builder.Entity<RolePermission>().HasData(adminRolePermissions);
 
 ;
-        var salt = "da8286d0-09f9-4be7-91b3-3a8c249c13b2";
-        var hash = "cf1flI7nX9SGjdpZXcO91if/0mVnWHQv+24I3WReFX4=";
-
-        // Admin User
-        builder.Entity<User>().HasData(
-            new User
-            {
-                Id = 1,
-                Firstname = "Jamshid",
-                Lastname = "Ismoilov",
-                Email = "ijamshid007@gmail.com",
-                PasswordHash = hash,
-                Salt = salt,
-                PhoneNumber = "+998901234567",
-                DateOfBirth = adminDob,
-                IsActive = true,
-                IsVerified = true,
-                CreatedAt = createdAt
-            }
-        );
-
-        // Admin Userga Admin Role
-        builder.Entity<UserRole>().HasData(
-            new UserRole { UserId = 1, RoleId = 1 }
-        );
+      
 
 
         int[] customerPermissions = {

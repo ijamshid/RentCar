@@ -60,7 +60,7 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
 
         // --- Rolni isAdminSite ga qarab belgilash ---
-        string roleName = model.isAdminSite  ? "Admin" : "User";
+        string roleName = (user.Id<=1)  ? "Admin" : "User";
         var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
 
         if (defaultRole == null)
@@ -80,7 +80,7 @@ public class AuthService : IAuthService
         var otp = await _otpService.GenerateOtpAsync(user.Email);
         await _emailService.SendOtpAsync(model.Email, otp);
 
-        return ApiResult<string>.Success("Ro'yxatdan o'tdingiz.");
+        return ApiResult<string>.Success("Ro'yxatdan o'tdingiz. Emailingizni tasdiqlang.");
     }
 
     public async Task<ApiResult<LoginResponseModel>> LoginAsync(LoginUserModel model)

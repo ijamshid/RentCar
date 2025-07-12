@@ -10,7 +10,8 @@ public enum ApplicationPermissionCode
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "User Create")]
     UserCreate,
-
+    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "Add Admin")]
+    AddAdmin,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "User Read")]
     UserRead,
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "User Update")]
