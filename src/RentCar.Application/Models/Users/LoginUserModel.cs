@@ -1,7 +1,16 @@
-﻿namespace RentCar.Application.Models.Users;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class LoginUserModel
+namespace RentCar.Application.Models.Users
 {
-    public string Email { get; set; } = null!;
-    public string Password { get; set; } = null!;
+    public class LoginUserModel
+    {
+        [Required(ErrorMessage = "Email kiritilishi shart.")]
+        [EmailAddress(ErrorMessage = "Email formati noto‘g‘ri.")]
+        public string Email { get; set; } = null!;
+
+        [Required(ErrorMessage = "Parol kiritilishi shart.")]
+        [MinLength(8, ErrorMessage = "Parol kamida 8 ta belgidan iborat bo‘lishi kerak.")]
+        [MaxLength(50, ErrorMessage = "Parol 50 ta belgidan oshmasligi kerak.")]
+        public string Password { get; set; } = null!;
+    }
 }
