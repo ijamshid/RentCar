@@ -108,9 +108,7 @@ public class DatabaseContext : DbContext
       
 
 
-        int[] customerPermissions = {
-    5, 9, 13, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
-};
+        int[] customerPermissions = {5, 9, 13, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30};
         var customerRolePermissions = customerPermissions.Select(pid => new RolePermission
         {
             RoleId = 2,

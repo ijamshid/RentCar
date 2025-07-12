@@ -36,7 +36,7 @@ namespace RentCar.API.Controllers
             return CreatedAtAction(nameof(GetReservationById), new { id = createdReservation.Id }, createdReservation);
         }
         
-        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateReservation))]
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UpdateReservation))]
         // POST: api/reservations
         [HttpPut]
         public async Task<IActionResult> UpdateReservation([FromBody] ReservationUpdateDto dto)
