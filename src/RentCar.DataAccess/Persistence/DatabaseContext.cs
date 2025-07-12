@@ -11,6 +11,7 @@ public class DatabaseContext : DbContext
     public DatabaseContext(DbContextOptions options) : base(options)
     { }
     public DbSet<UserOTPs> UserOTPs { get; set; }
+    public DbSet<Order> Orders { get; set; }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Brand> Brands { get; set; }
