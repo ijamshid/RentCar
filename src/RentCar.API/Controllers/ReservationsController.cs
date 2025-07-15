@@ -10,7 +10,7 @@ namespace RentCar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]  // Foydalanuvchi autentifikatsiyadan o‘tgan bo‘lishi shart
+    //[Authorize]  // Foydalanuvchi autentifikatsiyadan o‘tgan bo‘lishi shart
     public class ReservationsController : ControllerBase
     {
         private readonly IReservationService _reservationService;
@@ -20,7 +20,7 @@ namespace RentCar.API.Controllers
             _reservationService = reservationService;
         }
 
-        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateReservation))]
+        //[Authorize(Policy = nameof(ApplicationPermissionCode.CreateReservation))]
         // POST: api/reservations
         [HttpPost]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationCreateDto dto)

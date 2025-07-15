@@ -65,7 +65,7 @@ builder.Services.AddAuthorization(options =>
     foreach (var permissionName in Enum.GetNames(typeof(ApplicationPermissionCode)))
     {
         options.AddPolicy(permissionName, policy =>
-            policy.RequireClaim("permission", permissionName));
+        policy.RequireClaim("permission", permissionName));
     }
 });
 

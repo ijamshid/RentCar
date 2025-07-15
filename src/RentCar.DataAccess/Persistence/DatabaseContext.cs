@@ -24,8 +24,8 @@ public class DatabaseContext : DbContext
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
-    //private static readonly DateTime adminDob = new DateTime(1980, 1, 1, 12, 0, 0, DateTimeKind.Utc);
-    //private static readonly DateTime createdAt = new DateTime(2025, 7, 9, 12, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime adminDob = new DateTime(1980, 1, 1, 12, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime createdAt = new DateTime(2025, 7, 15, 12, 0, 0, DateTimeKind.Utc);
 
 
 
@@ -115,9 +115,35 @@ public class DatabaseContext : DbContext
             PermissionId = pid
         }).ToArray();
 
+        //password jamshid2408
         builder.Entity<RolePermission>().HasData(customerRolePermissions);
- 
+        var hash = "lhNexZJpra3Sx2B+cgdzO+mRDm2qjfLIENLuHdJQFk0=";
+        var salt = "a5a482f3-8c19-4a2d-84be-0fcbecb8d1ba";
+        var user = new User
+        {
+            
+            CreatedAt = createdAt,
+            DateOfBirth = adminDob,
+            Email = "ijamshid007@gmail.com",
+            PhoneNumber = "944225302",
+            Firstname = "Jamshid",
+            Lastname = "Ismoilov",
+            IsActive = true,
+            Id = 1,
+            IsVerified = true,
+            Salt = salt,
+            PasswordHash = hash
+
+        };
+        builder.Entity<User>().HasData(user);
+        var userRole = new UserRole
+        {
+            UserId = 1,
+            RoleId = 1
+        };
+        builder.Entity<UserRole>().HasData(userRole);
         base.OnModelCreating(builder);
+
 
         // So'ngra
     }

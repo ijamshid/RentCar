@@ -371,6 +371,11 @@ namespace RentCar.DataAccess.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "users",
+                columns: new[] { "id", "created_at", "date_of_birth", "email", "firstname", "is_active", "is_verified", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
+                values: new object[] { 1, new DateTime(2025, 7, 15, 12, 0, 0, 0, DateTimeKind.Utc), new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), "ijamshid007@gmail.com", "Jamshid", true, true, "Ismoilov", "VgKxWUJru2AunVaMv7+HxScmDjCAVJLLWtvOb6iOkNY=", "944225302", null, "a5a482f3-8c19-4a2d-84be-0fcbecb8d1ba" });
+
+            migrationBuilder.InsertData(
                 table: "permissions",
                 columns: new[] { "id", "description", "name", "permission_group_id", "short_name" },
                 values: new object[,]
@@ -408,6 +413,11 @@ namespace RentCar.DataAccess.Migrations
                     { 31, "Get Permissions", "GetPermissions", 8, "GetPermissions" },
                     { 32, "Add Admin", "AddAdmin", 1, "AA" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "user_roles",
+                columns: new[] { "role_id", "user_id" },
+                values: new object[] { 1, 1 });
 
             migrationBuilder.InsertData(
                 table: "role_permissions",

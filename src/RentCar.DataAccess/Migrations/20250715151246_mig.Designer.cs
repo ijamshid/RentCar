@@ -12,7 +12,7 @@ using RentCar.DataAccess.Persistence;
 namespace RentCar.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250712141838_mig")]
+    [Migration("20250715151246_mig")]
     partial class mig
     {
         /// <inheritdoc />
@@ -1195,6 +1195,22 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 7, 15, 12, 0, 0, 0, DateTimeKind.Utc),
+                            DateOfBirth = new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "ijamshid007@gmail.com",
+                            Firstname = "Jamshid",
+                            IsActive = true,
+                            IsVerified = true,
+                            Lastname = "Ismoilov",
+                            PasswordHash = "VgKxWUJru2AunVaMv7+HxScmDjCAVJLLWtvOb6iOkNY=",
+                            PhoneNumber = "944225302",
+                            Salt = "a5a482f3-8c19-4a2d-84be-0fcbecb8d1ba"
+                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.UserRole", b =>
@@ -1214,6 +1230,13 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_user_roles_role_id");
 
                     b.ToTable("user_roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            RoleId = 1
+                        });
                 });
 
             modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>

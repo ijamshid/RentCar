@@ -83,11 +83,13 @@ public class UserService : IUserService
         string roleName = dto.IsAdmin ? "Admin" : "User";
 
         _context.Users.Add(user);
+        _context.SaveChanges();
+        var user1 = await _context.Users.FirstOrDefaultAsync(a => a.Email == user.Email);
         var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
 
         _context.UserRoles.Add(new UserRole
         {
-            UserId = user.Id,
+            UserId = user1.Id,
             RoleId = defaultRole.Id
         });
         await _context.SaveChangesAsync();
