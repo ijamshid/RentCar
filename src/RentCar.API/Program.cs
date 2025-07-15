@@ -12,8 +12,6 @@ using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services;
 using RentCar.DataAccess;
-using RentCar.DataAccess.Persistence;
-using System.Text;
 using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
 //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
@@ -27,7 +25,6 @@ builder.Services.Configure<JwtOption>(
 
 var config = builder.Configuration;
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
