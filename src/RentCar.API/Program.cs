@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Minio;
+using Newtonsoft.Json;
 using Rentcar.Application.Services.Implementation;
 using RentCar.API.Middlewares;
 using RentCar.Application;
@@ -65,6 +66,13 @@ builder.Services.AddAuthorization(options =>
         policy.RequireClaim("permission", permissionName));
     }
 });
+
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+    });
+
 
 builder.Services.AddSingleton<IFileStorageService, MinioFileStorageService>();
 builder.Services.Configure<MinioSettings>(config.GetSection("MinioSettings"));
