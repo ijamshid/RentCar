@@ -40,6 +40,48 @@ namespace RentCar.DataAccess.Migrations
                         .HasName("pk_permission_group");
 
                     b.ToTable("permission_group", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "User Management"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Role Management"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Car Management"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Brand Management"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Reservation Management"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Rating Management"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Photo Management"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Permission Management"
+                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Brand", b =>
@@ -61,7 +103,7 @@ namespace RentCar.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("NOW()");
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -135,6 +177,10 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("plate_number");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
                     b.Property<int>("Year")
                         .HasColumnType("integer")
                         .HasColumnName("year");
@@ -152,7 +198,7 @@ namespace RentCar.DataAccess.Migrations
                     b.ToTable("cars", (string)null);
                 });
 
-            modelBuilder.Entity("RentCar.Core.Entities.Image", b =>
+            modelBuilder.Entity("RentCar.Core.Entities.CarPhoto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -161,39 +207,46 @@ namespace RentCar.DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AltText")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("alt_text");
-
                     b.Property<int>("CarId")
                         .HasColumnType("integer")
                         .HasColumnName("car_id");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("integer")
-                        .HasColumnName("order");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("uploaded_at")
-                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
-
-                    b.Property<string>("Url")
+                    b.Property<string>("ObjectName")
                         .IsRequired()
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)")
-                        .HasColumnName("url");
+                        .HasColumnType("text")
+                        .HasColumnName("object_name");
 
                     b.HasKey("Id")
-                        .HasName("pk_image");
+                        .HasName("pk_car_photos");
 
                     b.HasIndex("CarId")
-                        .HasDatabaseName("ix_image_car_id");
+                        .HasDatabaseName("ix_car_photos_car_id");
 
-                    b.ToTable("image", (string)null);
+                    b.ToTable("car_photos", (string)null);
+                });
+
+            modelBuilder.Entity("RentCar.Core.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("product_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_orders");
+
+                    b.ToTable("orders", (string)null);
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Payment", b =>
@@ -267,8 +320,10 @@ namespace RentCar.DataAccess.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -288,12 +343,15 @@ namespace RentCar.DataAccess.Migrations
 
                     b.Property<string>("ShortName")
                         .IsRequired()
-                        .HasColumnType("text")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
                         .HasColumnName("short_name");
 
                     b.Property<DateTime?>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.HasKey("Id")
                         .HasName("pk_permissions");
@@ -306,6 +364,340 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_permissions_permission_group_id");
 
                     b.ToTable("permissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "User Create",
+                            Name = "UserCreate",
+                            PermissionGroupId = 1,
+                            ShortName = "UserCreate"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "User Read",
+                            Name = "UserRead",
+                            PermissionGroupId = 1,
+                            ShortName = "UserRead"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "User Update",
+                            Name = "UserUpdate",
+                            PermissionGroupId = 1,
+                            ShortName = "UserUpdate"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "User Delete",
+                            Name = "UserDelete",
+                            PermissionGroupId = 1,
+                            ShortName = "UserDelete"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Add Admin",
+                            Name = "AddAdmin",
+                            PermissionGroupId = 1,
+                            ShortName = "AA"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Get Role",
+                            Name = "GetRole",
+                            PermissionGroupId = 2,
+                            ShortName = "GetRole"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Create Role",
+                            Name = "CreateRole",
+                            PermissionGroupId = 2,
+                            ShortName = "CreateRole"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Update Role",
+                            Name = "UpdateRole",
+                            PermissionGroupId = 2,
+                            ShortName = "UpdateRole"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Delete Role",
+                            Name = "DeleteRole",
+                            PermissionGroupId = 2,
+                            ShortName = "DeleteRole"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Get Car",
+                            Name = "GetCar",
+                            PermissionGroupId = 3,
+                            ShortName = "GetCar"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Create Car",
+                            Name = "CreateCar",
+                            PermissionGroupId = 3,
+                            ShortName = "CreateCar"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Update Car",
+                            Name = "UpdateCar",
+                            PermissionGroupId = 3,
+                            ShortName = "UpdateCar"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Delete Car",
+                            Name = "DeleteCar",
+                            PermissionGroupId = 3,
+                            ShortName = "DeleteCar"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Get Brand",
+                            Name = "GetBrand",
+                            PermissionGroupId = 4,
+                            ShortName = "GetBrand"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Create Brand",
+                            Name = "CreateBrand",
+                            PermissionGroupId = 4,
+                            ShortName = "CreateBrand"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Update Brand",
+                            Name = "UpdateBrand",
+                            PermissionGroupId = 4,
+                            ShortName = "UpdateBrand"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Delete Brand",
+                            Name = "DeleteBrand",
+                            PermissionGroupId = 4,
+                            ShortName = "DeleteBrand"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Get Reservation",
+                            Name = "GetReservation",
+                            PermissionGroupId = 5,
+                            ShortName = "GetReservation"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Create Reservation",
+                            Name = "CreateReservation",
+                            PermissionGroupId = 5,
+                            ShortName = "CreateReservation"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Confirm Reservation",
+                            Name = "ConfirmReservation",
+                            PermissionGroupId = 5,
+                            ShortName = "ConfirmReservation"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Cancel Reservation",
+                            Name = "CancelReservation",
+                            PermissionGroupId = 5,
+                            ShortName = "CancelReservation"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Update Reservation",
+                            Name = "UpdateReservation",
+                            PermissionGroupId = 5,
+                            ShortName = "UpdateReservation"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Delete Reservation",
+                            Name = "DeleteReservation",
+                            PermissionGroupId = 5,
+                            ShortName = "DeleteReservation"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Get Rating",
+                            Name = "GetRating",
+                            PermissionGroupId = 6,
+                            ShortName = "GetRating"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Create Rating",
+                            Name = "CreateRating",
+                            PermissionGroupId = 6,
+                            ShortName = "CreateRating"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Update Rating",
+                            Name = "UpdateRating",
+                            PermissionGroupId = 6,
+                            ShortName = "UpdateRating"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Delete Rating",
+                            Name = "DeleteRating",
+                            PermissionGroupId = 6,
+                            ShortName = "DeleteRating"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Get Photo",
+                            Name = "GetPhoto",
+                            PermissionGroupId = 7,
+                            ShortName = "GetPhoto"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Create Photo",
+                            Name = "CreatePhoto",
+                            PermissionGroupId = 7,
+                            ShortName = "CreatePhoto"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Update Photo",
+                            Name = "UpdatePhoto",
+                            PermissionGroupId = 7,
+                            ShortName = "UpdatePhoto"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Delete Photo",
+                            Name = "DeletePhoto",
+                            PermissionGroupId = 7,
+                            ShortName = "DeletePhoto"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Get Permissions",
+                            Name = "GetPermissions",
+                            PermissionGroupId = 8,
+                            ShortName = "GetPermissions"
+                        });
+                });
+
+            modelBuilder.Entity("RentCar.Core.Entities.Photo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AltText")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("alt_text");
+
+                    b.Property<int>("CarId")
+                        .HasColumnType("integer")
+                        .HasColumnName("car_id");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer")
+                        .HasColumnName("order");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("uploaded_at")
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("url");
+
+                    b.HasKey("Id")
+                        .HasName("pk_photos");
+
+                    b.HasIndex("CarId")
+                        .HasDatabaseName("ix_photos_car_id");
+
+                    b.ToTable("photos", (string)null);
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Rating", b =>
@@ -423,8 +815,10 @@ namespace RentCar.DataAccess.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("NOW() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -446,6 +840,22 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_roles_name");
 
                     b.ToTable("roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Full system access",
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Standard customer role",
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.RolePermission", b =>
@@ -465,6 +875,248 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_role_permissions_permission_id");
 
                     b.ToTable("role_permissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 6
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 8
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 10
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 11
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 12
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 13
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 14
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 15
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 16
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 17
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 18
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 19
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 20
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 21
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 22
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 23
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 24
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 25
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 26
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 27
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 28
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 29
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 30
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 31
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 32
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 13
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 17
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 18
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 20
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 21
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 22
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 23
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 24
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 25
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 26
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 27
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 28
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 29
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 30
+                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.User", b =>
@@ -540,22 +1192,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_users_email");
 
                     b.ToTable("users", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1980, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@carrental.com",
-                            Firstname = "Jamshid",
-                            IsActive = true,
-                            IsVerified = false,
-                            Lastname = "Ismoilov",
-                            PasswordHash = "h2q2T2u9Z8x4V5c1B0N7m6L5k4J3i2H1g0F9e8D7c6B5a4S3q2W1e0R9t8Y7u6I5o4P3a2S1d0F9g8H7j6K5l4Z3x2C1v0B9n8M7",
-                            PhoneNumber = "555-123-4567",
-                            Salt = "k5j4h3g2f1e0d9c8b7a6s5q4w3e2r1t0y9u8i7o6p5a4s3d2f1g0h9j8k7l6z5x4c3v2b1n0m9q8w7e6r5t4y3u2i1o0p9a8s7d6f5g4h3j2k1l0"
-                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.UserRole", b =>
@@ -595,26 +1231,17 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
+
                     b.Property<DateTime?>("ExpiredAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("expired_at");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
-
-                    b.Property<int?>("UserOTPsId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_ot_ps_id");
-
                     b.HasKey("Id")
                         .HasName("pk_user_ot_ps");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_ot_ps_user_id");
-
-                    b.HasIndex("UserOTPsId")
-                        .HasDatabaseName("ix_user_ot_ps_user_ot_ps_id");
 
                     b.ToTable("user_ot_ps", (string)null);
                 });
@@ -631,14 +1258,14 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("Brand");
                 });
 
-            modelBuilder.Entity("RentCar.Core.Entities.Image", b =>
+            modelBuilder.Entity("RentCar.Core.Entities.CarPhoto", b =>
                 {
                     b.HasOne("RentCar.Core.Entities.Car", "Car")
-                        .WithMany("Images")
+                        .WithMany("Photos")
                         .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_image_cars_car_id");
+                        .HasConstraintName("fk_car_photos_cars_car_id");
 
                     b.Navigation("Car");
                 });
@@ -669,11 +1296,23 @@ namespace RentCar.DataAccess.Migrations
                     b.HasOne("Rent.Core.Entities.PermissionGroup", "PermissionGroup")
                         .WithMany("Permissions")
                         .HasForeignKey("PermissionGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_permissions_permission_group_permission_group_id");
 
                     b.Navigation("PermissionGroup");
+                });
+
+            modelBuilder.Entity("RentCar.Core.Entities.Photo", b =>
+                {
+                    b.HasOne("RentCar.Core.Entities.Car", "Car")
+                        .WithMany()
+                        .HasForeignKey("CarId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_photos_cars_car_id");
+
+                    b.Navigation("Car");
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Rating", b =>
@@ -760,23 +1399,6 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
-                {
-                    b.HasOne("RentCar.Core.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_ot_ps_users_user_id");
-
-                    b.HasOne("SecureLoginApp.Core.Entities.UserOTPs", null)
-                        .WithMany("OtpCodes")
-                        .HasForeignKey("UserOTPsId")
-                        .HasConstraintName("fk_user_ot_ps_user_ot_ps_user_ot_ps_id");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Rent.Core.Entities.PermissionGroup", b =>
                 {
                     b.Navigation("Permissions");
@@ -789,7 +1411,7 @@ namespace RentCar.DataAccess.Migrations
 
             modelBuilder.Entity("RentCar.Core.Entities.Car", b =>
                 {
-                    b.Navigation("Images");
+                    b.Navigation("Photos");
 
                     b.Navigation("Ratings");
 
@@ -823,11 +1445,6 @@ namespace RentCar.DataAccess.Migrations
                     b.Navigation("Reservations");
 
                     b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
-                {
-                    b.Navigation("OtpCodes");
                 });
 #pragma warning restore 612, 618
         }

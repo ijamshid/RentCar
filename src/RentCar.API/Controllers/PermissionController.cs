@@ -17,23 +17,13 @@ namespace RentCar.API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetPermissions))]
         public IActionResult GetPermissions()
         {
             var allPermissions = _permissionService.GetAllPermissionDescriptions();
             return Ok(allPermissions);
         }
 
-        [HttpGet("all-grouped")]
-        [Authorize(Policy = nameof(ApplicationPermissionCode.GetPermissions))]
-        public async Task<IActionResult> GetGroupedPermissionsFromDb()
-        {
-            var result = await _permissionService.GetPermissionsFromDbAsync();
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
+        
     }
 }

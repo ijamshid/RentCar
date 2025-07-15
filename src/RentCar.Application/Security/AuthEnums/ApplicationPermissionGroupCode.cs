@@ -4,7 +4,12 @@
     {
         User,
         Role,
-        Permission
+        Permission,
+        Car,
+        Brand,
+        Reservation,
+        Rating,
+        Photo
 
 
     }

@@ -1,4 +1,5 @@
-﻿using RentCar.Application.DTOs;
+﻿using RentCar.Application.Models.Car;
+using RentCar.Application.Models.Reservation;
 
 namespace RentCar.Application.Services.Interfaces
 {
@@ -14,8 +15,6 @@ namespace RentCar.Application.Services.Interfaces
         Task<bool> DeleteAsync(int id);
 
         // Maxsus reservation statuslarini boshqarish metodlari
-
-        Task<ServiceResult<ReservationGetDto>> ConfirmReservationAsync(int reservationId, string userId);
 
         Task<ServiceResult<ReservationGetDto>> CancelReservationAsync(int reservationId, string userId);
 

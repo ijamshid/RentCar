@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using RentCar.Application.Helpers.GenerateJWT;
+using RentCar.Application.Helpers.PasswordHasher;
+using RentCar.Application.Models.Users;
 using RentCar.Application.Security;
+using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
 
@@ -10,16 +14,140 @@ public class AuthService : IAuthService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly DatabaseContext _context;
+    private readonly IEmailService _emailService;
+    private readonly IOtpService _otpService;
+    private readonly IPasswordHasher _passwordHasher;
+    private readonly IJwtTokenHandler _jwtTokenHandler;
     private bool? _isAuthenticated; // Bu field IsAuthenticated property'si uchun kesh bo'ladi.
     private HashSet<string>? _permissions; // Bu field Permissions property'si uchun kesh bo'ladi.
     private IUser? _user; // Bu field User property'si uchun kesh bo'ladi.
 
-    public AuthService(IHttpContextAccessor httpContextAccessor, DatabaseContext context)
+    public AuthService(IHttpContextAccessor httpContextAccessor, DatabaseContext context,
+        IEmailService emailservice, IOtpService otpService, IPasswordHasher passwordHasher,
+        IJwtTokenHandler jwtTokenHandler)
     {
         _httpContextAccessor = httpContextAccessor;
         _context = context;
+        _emailService = emailservice;
+        _otpService = otpService;
+        _passwordHasher = passwordHasher;
+        _jwtTokenHandler = jwtTokenHandler;
     }
 
+    public async Task<ApiResult<string>> RegisterAsync(RegisterUserModel model)
+    {
+        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+        if (existingUser != null)
+            return ApiResult<string>.Failure(new[] { "Email allaqachon mavjud" });
+
+        var salt = Guid.NewGuid().ToString();
+        var hash = _passwordHasher.Encrypt(model.Password, salt);
+
+        var user = new User
+        {
+            Firstname = model.FirstName,
+            Lastname = model.LastName,
+            Email = model.Email,
+            PasswordHash = hash,
+            DateOfBirth = model.DateOfBirth,
+            PhoneNumber = model.PhoneNumber,
+            Salt = salt,
+            CreatedAt = DateTime.UtcNow,
+            IsVerified = false // Yangi foydalanuvchilar odatda tasdiqlanmagan holda boshlanadi
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        // --- Rolni isAdminSite ga qarab belgilash ---
+        string roleName = (user.Id<=1)  ? "Admin" : "User";
+        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+
+        if (defaultRole == null)
+        {
+            // Agar kerakli rol topilmasa, xato qaytaramiz
+            return ApiResult<string>.Failure(new[] { $"Tizimda '{roleName}' roli topilmadi. Admin bilan bog'laning." });
+        }
+
+        _context.UserRoles.Add(new UserRole
+        {
+            UserId = user.Id,
+            RoleId = defaultRole.Id
+        });
+        await _context.SaveChangesAsync();
+        // --- Rolni belgilash qismi tugadi ---
+
+        var otp = await _otpService.GenerateOtpAsync(user.Email);
+        await _emailService.SendOtpAsync(model.Email, otp);
+
+        return ApiResult<string>.Success("Ro'yxatdan o'tdingiz. Emailingizni tasdiqlang.");
+    }
+
+    public async Task<ApiResult<LoginResponseModel>> LoginAsync(LoginUserModel model)
+    {
+        var user = await _context.Users
+        .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+                .ThenInclude(r => r.RolePermissions)
+                    .ThenInclude(rp => rp.Permission)
+        .FirstOrDefaultAsync(u => u.Email == model.Email);
+
+        if (user is null)
+            return ApiResult<LoginResponseModel>.Failure(new[] { "Foydalanuvchi topilmadi" });
+
+        if (!_passwordHasher.Verify(user.PasswordHash, model.Password, user.Salt))
+            return ApiResult<LoginResponseModel>.Failure(new[] { "Parol yoki email noto‘g‘ri" });
+
+        if (!user.IsVerified)
+            return ApiResult<LoginResponseModel>.Failure(new[] { "Email tasdiqlanmagan" });
+
+        var accessToken = _jwtTokenHandler.GenerateAccessToken(user, Guid.NewGuid().ToString());
+        var refreshToken = _jwtTokenHandler.GenerateRefreshToken();
+
+        return ApiResult<LoginResponseModel>.Success(new LoginResponseModel
+        {
+            Email = user.Email,
+            FirstName = user.Firstname,
+            LastName = user.Lastname,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            Roles = user.UserRoles?
+                       .Where(ur => ur.Role != null && !string.IsNullOrEmpty(ur.Role.Name))
+                       .Select(ur => ur.Role.Name)
+                       .ToList() ?? new List<string>(),
+
+            Permissions = user.UserRoles?
+                            .Where(ur => ur.Role?.RolePermissions != null)
+                            .SelectMany(ur => ur.Role.RolePermissions)
+                            .Where(rp => rp.Permission != null && !string.IsNullOrEmpty(rp.Permission.ShortName))
+                            .Select(rp => rp.Permission.ShortName)
+                            .Distinct()
+                            .ToList() ?? new List<string>()
+        });
+
+    }
+
+    public async Task<bool> VerifyOtpAsync(string email, string inputCode)
+    {
+        var otp = await _context.UserOTPs
+            .Where(o => o.Email == email && o.Code == inputCode && o.ExpiredAt > DateTime.UtcNow)
+            .OrderByDescending(o => o.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        if (otp == null)
+            return false;  // Kod noto‘g‘ri yoki muddati o‘tgan
+
+        // Kod to‘g‘ri, foydalanuvchini tasdiqlashni amalga oshirish mumkin
+        var user = await _context.Users.FirstOrDefaultAsync(a=>a.Email==email);
+        if (user == null) return false;
+
+        user.IsVerified = true;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+ 
     // --- Muhim o'zgarishlar bu yerda ---
     public bool IsAuthenticated
     {
@@ -74,7 +202,7 @@ public class AuthService : IAuthService
                     _user = _context.Set<User>().AsQueryable().Select(a => new UserAuthModel
                     {
                         Id = a.Id,
-                        FullName = a.Firstname+" "+a.Lastname, // Entity'dagi 'Fullname' property'sini ishlatamiz
+                        FullName = a.Firstname + " " + a.Lastname, // Entity'dagi 'Fullname' property'sini ishlatamiz
                         IsVerified = a.IsVerified, // IsVerified ni yuklaymiz
                         // Foydalanuvchining rollari orqali ularga berilgan barcha ruxsatlarni olamiz
                         Permissions = a.UserRoles

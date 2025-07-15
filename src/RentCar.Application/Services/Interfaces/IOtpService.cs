@@ -4,9 +4,9 @@ namespace RentCar.Application.Services.Interfaces
 {
     public interface IOtpService
     {
-        Task<string> GenerateOtpAsync(int userId);
+        Task<string> GenerateOtpAsync(string email);
         bool ValidateOtp(string email, string code);
-        Task<UserOTPs?> GetLatestOtpAsync(int userId, string code);
+        Task<UserOTPs?> GetLatestOtpAsync(string email, string code);
 
     }
 }

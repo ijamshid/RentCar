@@ -15,11 +15,11 @@ public class Car:BaseEntity
     public string Color { get; set; }
     public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
+    public CarStatus Status { get; set; } = CarStatus.Mavjud; // Default qiymat
 
     // Navigation properties
     public Brand Brand { get; set; }
     public ICollection<Reservation> Reservations { get; set; }
     public ICollection<Rating> Ratings { get; set; }
-    public ICollection<Image> Images { get; set; } = new List<Image>(); // New navigation property for Images
-
+    public ICollection<CarPhoto>? Photos { get; set; } = new List<CarPhoto>();
 }

@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.Car;
+using RentCar.Application.Models.Reservation;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.Core.Enums;
@@ -75,7 +76,7 @@ namespace RentCar.Application.Services
             if (!int.TryParse(userId, out int userIdInt))
                 throw new UnauthorizedAccessException("Invalid user ID.");
 
-            var car = await _context.Cars.FindAsync(dto.CarId);
+            var car = await _context.Cars.FirstOrDefaultAsync(a => a.Id == dto.CarId);
             if (car == null)
                 throw new ArgumentException("Car not found");
 
@@ -115,7 +116,7 @@ namespace RentCar.Application.Services
 
         public async Task<bool> UpdateAsync(ReservationUpdateDto dto)
         {
-            var reservation = await _context.Reservations.FindAsync(dto.Id);
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(a => a.Id == dto.Id);
             if (reservation == null)
                 return false;
 
@@ -130,7 +131,7 @@ namespace RentCar.Application.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var reservation = await _context.Reservations.FindAsync(id);
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(a => a.Id == id);
             if (reservation == null)
                 return false;
 
@@ -143,42 +144,9 @@ namespace RentCar.Application.Services
             return true;
         }
 
-        public async Task<ServiceResult<ReservationGetDto>> ConfirmReservationAsync(int reservationId, string userId)
-        {
-            var reservation = await _context.Reservations
-                .Include(r => r.Payment)
-                .FirstOrDefaultAsync(r => r.Id == reservationId);
-
-            if (reservation == null)
-                return ServiceResult<ReservationGetDto>.Fail("Reservation not found");
-
-            if (reservation.UserId != int.Parse(userId))
-                return ServiceResult<ReservationGetDto>.Fail("Unauthorized access");
-
-            if (reservation.Status != ReservationStatus.Pending)
-                return ServiceResult<ReservationGetDto>.Fail("Reservation cannot be confirmed");
-
-            reservation.Status = ReservationStatus.Confirmed;
-            reservation.LastModifiedAt = DateTime.UtcNow;
-
-            if (reservation.Payment != null)
-            {
-                reservation.Payment.Status = PaymentStatus.Completed;
-                reservation.Payment.PaymentDate = DateTime.UtcNow;
-            }
-
-            await _context.SaveChangesAsync();
-
-            var resultDto = _mapper.Map<ReservationGetDto>(reservation);
-            _cache.Remove("reservations");
-            _cache.Remove($"reservation_{reservation.Id}");
-
-            return ServiceResult<ReservationGetDto>.Success(resultDto);
-        }
-
         public async Task<ServiceResult<ReservationGetDto>> CancelReservationAsync(int reservationId, string userId)
         {
-            var reservation = await _context.Reservations.FindAsync(reservationId);
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(a => a.Id == reservationId);
 
             if (reservation == null)
                 return ServiceResult<ReservationGetDto>.Fail("Reservation not found");

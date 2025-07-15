@@ -1,4 +1,4 @@
-﻿using RentCar.Application.DTOs;
+﻿using RentCar.Application.Models.Brand;
 
 namespace RentCar.Application.Services.Interfaces
 {

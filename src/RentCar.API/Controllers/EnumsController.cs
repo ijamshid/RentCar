@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.DTOs;
+using RentCar.Application.Security.AuthEnums;
 using RentCar.Core.Enums;
 
 namespace RentCar.API.Controllers
@@ -8,6 +10,7 @@ namespace RentCar.API.Controllers
     [ApiController]
     public class EnumsController : ControllerBase
     {
+
         [HttpGet]
         public ActionResult<List<SelectListItemDto>> GetEnumSelectList([FromQuery] string enumName)
         {

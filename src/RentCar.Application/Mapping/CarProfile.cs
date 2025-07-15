@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
-using RentCar.Application.DTOs;
+using Microsoft.Extensions.Options;
+using RentCar.Application.Common;
+using RentCar.Application.Models.Brand;
+using RentCar.Application.Models.Car;
 using RentCar.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,9 +16,15 @@ namespace RentCar.Application.Mapping
     {
         public CarProfile()
         {
-            CreateMap<CreateBrandDto, Brand>();
-            CreateMap<Brand, BrandGetDto>();
-            CreateMap<UpdateBrandDto, Brand>();
+            Console.WriteLine("CarProfile loaded!");
+            CreateMap<CarCreateDto, Car>()
+                .ForMember(dest => dest.Photos, opt => opt.Ignore());
+            CreateMap<Car, CarGetDto>()
+                .ForMember(dest => dest.ImageGuids,
+                           opt => opt.Ignore())
+                .ForMember(dest => dest.BrandName,
+                            opt => opt.MapFrom(src => src.Brand.Name));
+            CreateMap<UpdateBrandDto, Car>();
         }
     }
 }

@@ -1,21 +1,20 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.Car;
+using RentCar.Application.Security.AuthEnums;
+using RentCar.Application.Services;
 using RentCar.Application.Services.Interfaces;
 
 namespace RentCar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CarsController(ICarService carService) : ControllerBase
+    public class CarsController(ICarService carService, IFileStorageService storageService) : ControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var cars = await carService.GetAllAsync();
-            return Ok(cars);
-        }
+       
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetCar))]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
@@ -23,13 +22,43 @@ namespace RentCar.API.Controllers
             return Ok(cars);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CarCreateDto dto)
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetCar))]
+        [HttpGet("by-brand/{brand}")]
+        public async Task<IActionResult> GetByBrand([FromRoute] string brand)
         {
+            var cars = await carService.GetByBrand(brand);
+            return Ok(cars);
+        }
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetCar))]
+        [HttpGet]
+        public async Task<IActionResult> GetlAll()
+        {
+            var cars = await carService.GetAllAsync();
+            return Ok(cars);
+        }
+
+        [HttpGet("photos/{objectName}")]
+        public async Task<IActionResult> GetPhoto([FromRoute] string objectName)
+        {
+            string bucket = "car-photos";
+
+            var stream = await storageService.DownloadFileAsync(bucket, objectName);
+            if (stream == null)
+                return NotFound();
+
+            return File(stream, "image/jpeg");
+        }
+
+        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateCar))]
+        [HttpPost]
+        public async Task<IActionResult> Create([FromForm] CarCreateDto dto)
+        {
+
             await carService.CreateAsync(dto);
             return Created();
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UpdateCar))]
         [HttpPut]
         public IActionResult Update([FromBody] CarUpdateDto dto)
         {
@@ -37,6 +66,7 @@ namespace RentCar.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.DeleteCar))]
         [HttpDelete("{id}")]
         public IActionResult Delete([FromRoute] int id)
         {

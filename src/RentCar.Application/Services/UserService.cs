@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using RentCar.Application.DTOs;
 using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Helpers.PasswordHashers;
+using RentCar.Application.Models.User2;
 using RentCar.Application.Models.Users;
+using RentCar.Application.Services.Impl;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
-using SecureLoginApp.Core.Entities;
 
 namespace RentCar.Application.Services;
 
@@ -18,159 +18,26 @@ public class UserService : IUserService
     private readonly DatabaseContext _context;
     private readonly IMapper _mapper;
     private readonly IMemoryCache _cache;
-    private readonly IJwtTokenHandler _jwtTokenHandler;
-    private readonly IPasswordHasher _passwordHasher;
-    private readonly IEmailService _emailService;
-    private readonly IOtpService _otpService;
     private readonly IAuthService _authService;
 
-
-    public UserService(DatabaseContext context, IMapper mapper, IMemoryCache cache, IJwtTokenHandler jwtTokenHandler,
-        IPasswordHasher hasher, IEmailService email, IOtpService otp, IAuthService auth)
+    public UserService(DatabaseContext context, IMapper mapper, IMemoryCache cache, IAuthService authService)
     {
         _context = context;
         _mapper = mapper;
         _cache = cache;
-        _jwtTokenHandler = jwtTokenHandler;
-        _passwordHasher = hasher;
-        _emailService = email;
-        _otpService = otp;
-        _authService = auth;
+        _authService = authService;
     }
-
-    public async Task<ApiResult<string>> RegisterAsync(string firstname, string lastname, string email, string password, bool isAdminSite, string a, DateTime b)
+    public async Task<IEnumerable<UserGetDto>> GetAllAsync()
     {
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (existingUser != null)
-            return ApiResult<string>.Failure(new[] { "Email allaqachon mavjud" });
+        if (_cache.TryGetValue("users", out IEnumerable<UserGetDto> cachedUsers))
+            return cachedUsers;
 
-        var salt = Guid.NewGuid().ToString();
-        var hash = _passwordHasher.Encrypt(password, salt);
-
-        var user = new User
-        {
-            Firstname = firstname,
-            Lastname = lastname,
-            Email = email,
-            PasswordHash = hash,
-            DateOfBirth = DateTime.SpecifyKind(b, DateTimeKind.Utc),
-            PhoneNumber = a,
-            Salt = salt,
-            CreatedAt = DateTime.UtcNow,
-            IsVerified = false // Yangi foydalanuvchilar odatda tasdiqlanmagan holda boshlanadi
-        };
-
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
-
-        // --- Rolni isAdminSite ga qarab belgilash ---
-        string roleName = isAdminSite ? "Admin" : "User";
-        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
-
-        if (defaultRole == null)
-        {
-            // Agar kerakli rol topilmasa, xato qaytaramiz
-            return ApiResult<string>.Failure(new[] { $"Tizimda '{roleName}' roli topilmadi. Admin bilan bog'laning." });
-        }
-
-        _context.UserRoles.Add(new UserRole
-        {
-            UserId = user.Id,
-            RoleId = defaultRole.Id
-        });
-        await _context.SaveChangesAsync();
-        // --- Rolni belgilash qismi tugadi ---
-
-        var otp = await _otpService.GenerateOtpAsync(user.Id);
-        await _emailService.SendOtpAsync(email, otp);
-
-        return ApiResult<string>.Success("Ro'yxatdan o'tdingiz. Email orqali tasdiqlang.");
-    }
-
-    public async Task<ApiResult<LoginResponseModel>> LoginAsync(LoginUserModel model)
-    {
-        var user = await _context.Users
-            .Include(u => u.UserRoles)
-                .ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(u => u.Email == model.Email);
-
-        if (user is null)
-            return ApiResult<LoginResponseModel>.Failure(new[] { "Foydalanuvchi topilmadi" });
-
-        if (!_passwordHasher.Verify(user.PasswordHash, model.Password, user.Salt))
-            return ApiResult<LoginResponseModel>.Failure(new[] { "Parol noto‘g‘ri" });
-
-        if (!user.IsVerified)
-            return ApiResult<LoginResponseModel>.Failure(new[] { "Email tasdiqlanmagan" });
-
-        var accessToken = _jwtTokenHandler.GenerateAccessToken(user, Guid.NewGuid().ToString());
-        var refreshToken = _jwtTokenHandler.GenerateRefreshToken();
-
-        return ApiResult<LoginResponseModel>.Success(new LoginResponseModel
-        {
-            Email = user.Email,
-            FirstName = user.Firstname,
-            LastName = user.Lastname,
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            Roles = user.UserRoles?
-                       .Where(ur => ur.Role != null && !string.IsNullOrEmpty(ur.Role.Name))
-                       .Select(ur => ur.Role.Name)
-                       .ToList() ?? new List<string>(),
-
-            Permissions = user.UserRoles?
-                            .Where(ur => ur.Role?.RolePermissions != null)
-                            .SelectMany(ur => ur.Role.RolePermissions)
-                            .Where(rp => rp.Permission != null && !string.IsNullOrEmpty(rp.Permission.ShortName))
-                            .Select(rp => rp.Permission.ShortName)
-                            .Distinct()
-                            .ToList() ?? new List<string>()
-        });
-
-    }
-
-    public async Task<string> SendOtpEmailAsync(string email)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        if (user == null)
-            throw new Exception("Foydalanuvchi topilmadi.");
-
-        var otpCode = new Random().Next(100000, 999999).ToString();
-
-        var otp = new UserOTPs
-        {
-            UserId= user.Id,
-            Code = otpCode,
-            CreatedAt = DateTime.UtcNow,
-            ExpiredAt = DateTime.UtcNow.AddMinutes(5)
-        };
-
-        await _context.UserOTPs.AddAsync(otp);
-        await _context.SaveChangesAsync();
-
-        await _emailService.SendOtpAsync(email, otpCode);
-
-        return otpCode;
-    }
-
-    public async Task<bool> VerifyOtpAsync(int userId, string inputCode)
-    {
-        var otp = await _context.UserOTPs
-            .Where(o => o.UserId == userId && o.Code == inputCode && o.ExpiredAt > DateTime.UtcNow)
-            .OrderByDescending(o => o.CreatedAt)
-            .FirstOrDefaultAsync();
-
-        if (otp == null)
-            return false;  // Kod noto‘g‘ri yoki muddati o‘tgan
-
-        // Kod to‘g‘ri, foydalanuvchini tasdiqlashni amalga oshirish mumkin
-        var user = await _context.Users.FindAsync(userId);
-        if (user == null) return false;
-
-        user.IsVerified = true;
-        await _context.SaveChangesAsync();
-
-        return true;
+        var users = await _context.Users.ToListAsync();
+        var result = _mapper.Map<IEnumerable<UserGetDto>>(users);
+        var cacheOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+        _cache.Set("users", result, cacheOptions);
+        return result;
     }
 
     public async Task<ApiResult<UserAuthResponseModel>> GetUserAuth()
@@ -189,30 +56,13 @@ public class UserService : IUserService
 
         return ApiResult<UserAuthResponseModel>.Success(userPermissions);
     }
-
-
-
-    public async Task<IEnumerable<UserGetDto>> GetAllAsync()
-    {
-        if (_cache.TryGetValue("users", out IEnumerable<UserGetDto> cachedUsers))
-            return cachedUsers;
-
-        var users = await _context.Users.ToListAsync();
-        var result = _mapper.Map<IEnumerable<UserGetDto>>(users);
-        var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
-        _cache.Set("users", result, cacheOptions);
-        return result;
-    }
-
-
     public async Task<UserGetDto> GetByIdAsync(int id)
     {
         string cacheKey = $"user_{id}";
         if (_cache.TryGetValue(cacheKey, out UserGetDto cachedUser))
             return cachedUser;
 
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.FirstOrDefaultAsync(a => a.Id == id);
         if (user == null) return null;
 
         var result = _mapper.Map<UserGetDto>(user);
@@ -225,12 +75,21 @@ public class UserService : IUserService
     public async Task<UserGetDto> CreateAsync(UserCreateDto dto)
     {
         var user = _mapper.Map<User>(dto);
-
-        // Password hashing (masalan, BCrypt ishlatish mumkin)
-        user.PasswordHash = "s"; //BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        var hash = new PasswordHasher();
+        var salt=hash.GenerateSalt();
+        user.PasswordHash = hash.Encrypt(dto.Password, salt);
         user.IsActive = true;
+        user.Salt= salt;
+        string roleName = dto.IsAdmin ? "Admin" : "User";
 
         _context.Users.Add(user);
+        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+
+        _context.UserRoles.Add(new UserRole
+        {
+            UserId = user.Id,
+            RoleId = defaultRole.Id
+        });
         await _context.SaveChangesAsync();
 
         _cache.Remove("users"); // cache invalidation
@@ -240,11 +99,12 @@ public class UserService : IUserService
 
     public async Task<bool> UpdateAsync(UserUpdateDto dto)
     {
-        var user = await _context.Users.FindAsync(dto.Id);
+        var user = await _context.Users.FirstOrDefaultAsync(a => a.Id == dto.Id);
         if (user == null)
             return false;
 
         _mapper.Map(dto, user);
+
         await _context.SaveChangesAsync();
 
         _cache.Remove("users");
@@ -255,7 +115,7 @@ public class UserService : IUserService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var user = await _context.Users.FindAsync(id);
+        var user = await _context.Users.FirstOrDefaultAsync(a => a.Id == id);
         if (user == null)
             return false;
 

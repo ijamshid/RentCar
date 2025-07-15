@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using RentCar.Application.DTOs;
+using RentCar.Application.Models.Brand;
+using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
 
 namespace RentCar.API.Controllers
@@ -11,10 +11,12 @@ namespace RentCar.API.Controllers
     public class BrandController : ControllerBase
     {
         private readonly IBrandService _brandService;
+
         public BrandController(IBrandService brandService)
         {
             _brandService = brandService;
         }
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetBrand))]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,6 +24,7 @@ namespace RentCar.API.Controllers
             return Ok(brands);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.GetBrand))]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -33,6 +36,7 @@ namespace RentCar.API.Controllers
             return Ok(brand);
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateBrand))]
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateBrandDto dto)
         {
@@ -40,6 +44,7 @@ namespace RentCar.API.Controllers
             return StatusCode(201); // Created
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.UpdateBrand))]
         [HttpPut]
         public IActionResult Update(int id, [FromBody] UpdateBrandDto dto)
         {
@@ -51,6 +56,7 @@ namespace RentCar.API.Controllers
             return NoContent(); // 204 No Content
         }
 
+        [Authorize(Policy = nameof(ApplicationPermissionCode.DeleteBrand))]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
