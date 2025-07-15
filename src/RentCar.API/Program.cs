@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Minio;
 using Rentcar.Application.Services.Implementation;
+using RentCar.API.Middlewares;
 using RentCar.Application;
 using RentCar.Application.Common;
 using RentCar.Application.Helpers;
@@ -151,7 +152,7 @@ app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseRateLimiter();
 
 app.MapControllers();
