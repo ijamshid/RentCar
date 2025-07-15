@@ -46,7 +46,7 @@ namespace RentCar.API.Controllers
             if (stream == null)
                 return NotFound();
 
-            return File(stream, "image/jpeg");
+            return File(stream, "application/octet-stream", objectName);
         }
 
         [Authorize(Policy = nameof(ApplicationPermissionCode.CreateCar))]
