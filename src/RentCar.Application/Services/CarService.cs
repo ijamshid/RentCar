@@ -111,32 +111,41 @@ namespace RentCar.Application.Services
 
         public async Task<IEnumerable<CarGetDto>> GetByBrand(string brand)
         {
-            const string cacheKey = "brand_cars";
+            if (string.IsNullOrWhiteSpace(brand))
+                throw new ArgumentException("Brand name cannot be null or empty.", nameof(brand));
+
+            var trimmedBrand = brand.Trim().ToUpper();
+            var cacheKey = $"brand_cars_{trimmedBrand}";
 
             if (_cache.TryGetValue(cacheKey, out IEnumerable<CarGetDto> cachedCars))
                 return cachedCars;
 
-            if (string.IsNullOrWhiteSpace(brand))
-            {
-                throw new Exception("Brand name cannot be null or empty.");
-            }
-
-            var trimmedName = brand.Trim().ToUpper();
-
             var cars = await _context.Cars
-                .Where(c => EF.Functions.Like(c.Brand.Name.ToUpper(), $"%{trimmedName}%"))
+                .Include(c => c.Brand)
+                .Include(c => c.Photos)
+                .Where(c => c.Brand.Name.ToUpper() == trimmedBrand)
                 .ToListAsync();
 
             if (cars.Count == 0)
-            {
                 throw new KeyNotFoundException($"No cars found for brand '{brand}'.");
-            }
-
 
             var result = _mapper.Map<IEnumerable<CarGetDto>>(cars);
 
+            var resultList = result.ToList();
+
+            for (int i = 0; i < resultList.Count; i++)
+            {
+                var carEntity = cars[i];
+                var dto = resultList[i];
+
+                dto.ImageGuids = carEntity.Photos?
+                    .Select(p => (p.ObjectName))
+                    .ToList();
+            }
+
             var cacheOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+
 
             _cache.Set(cacheKey, result, cacheOptions);
 
@@ -152,6 +161,7 @@ namespace RentCar.Application.Services
 
             var car = await _context.Cars
                 .Include(c => c.Brand)
+                .Include(a=>a.Photos)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (car == null)
