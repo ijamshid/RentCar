@@ -1,38 +1,41 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using RentCar.Application.Models.Roles;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RentCar.Application.Services
 {
     public class RoleService : IRoleService
     {
         private readonly DatabaseContext _context;
+        private readonly IMapper _mapper;
 
-        public RoleService(DatabaseContext context)
+        public RoleService(DatabaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Role>> GetAllAsync()
+        public async Task<IEnumerable<RoleDto>> GetAllAsync()
         {
-            return await _context.Roles
+            var roles = await _context.Roles
                 .Include(r => r.RolePermissions)
                     .ThenInclude(rp => rp.Permission)
                 .ToListAsync();
+
+            return _mapper.Map<IEnumerable<RoleDto>>(roles);
         }
 
-        public async Task<Role?> GetByIdAsync(int id)
+        public async Task<RoleDto?> GetByIdAsync(int id)
         {
-            return await _context.Roles
+            var role = await _context.Roles
                 .Include(r => r.RolePermissions)
                     .ThenInclude(rp => rp.Permission)
                 .FirstOrDefaultAsync(r => r.Id == id);
+
+            return _mapper.Map<RoleDto>(role);
         }
 
         public async Task CreateAsync(string name)

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using RentCar.Application.Extensions;
 using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Models.Permissions;
@@ -12,9 +13,11 @@ namespace RentCar.Application.Services
     public class PermissionService : IPermissionService
     {
         private readonly DatabaseContext _dbContext;
-        public PermissionService(DatabaseContext dbContext)
+        private readonly IMapper _mapper;
+        public PermissionService(DatabaseContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
         public List<PermissionCodeDescription> GetAllPermissionDescriptions()
         {
