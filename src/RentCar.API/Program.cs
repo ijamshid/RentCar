@@ -67,11 +67,16 @@ builder.Services.AddAuthorization(options =>
     }
 });
 
+//builder.Services.AddControllers()
+//    .AddNewtonsoftJson(options =>
+//    {
+//        options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
+//    });
+
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
-    {
-        options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-    });
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+    );
 
 
 builder.Services.AddSingleton<IFileStorageService, MinioFileStorageService>();

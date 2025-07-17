@@ -16,8 +16,8 @@ namespace RentCar.Core.Entities
         public DateTime? UpdatedAt { get; set; }
 
 
-        public PermissionGroup PermissionGroup { get; set; } = null!;
+        public PermissionGroup PermissionGroup { get; set; } 
 
-        public ICollection<RolePermission> RolePermissions { get; set; } = null!;
+        public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
     }
 }
