@@ -71,9 +71,9 @@ public class MinioFileStorageService : IFileStorageService
               new GetObjectArgs()
                 .WithBucket(bucketName)
                 .WithObject(objectName)
-                .WithCallbackStream(async (stream) => // Fayl streamini memoryStream ga nusxalash
+                .WithCallbackStream(stream =>
                 {
-                    await stream.CopyToAsync(memoryStream);
+                    stream.CopyTo(memoryStream);
                 })
             ).ConfigureAwait(false);
 
