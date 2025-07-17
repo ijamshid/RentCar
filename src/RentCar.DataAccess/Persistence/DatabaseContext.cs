@@ -115,7 +115,7 @@ public class DatabaseContext : DbContext
             PermissionId = pid
         }).ToArray();
 
-        //password jamshid2408
+        //password ijamshid2408
         builder.Entity<RolePermission>().HasData(customerRolePermissions);
         var hash = "lhNexZJpra3Sx2B+cgdzO+mRDm2qjfLIENLuHdJQFk0=";
         var salt = "a5a482f3-8c19-4a2d-84be-0fcbecb8d1ba";

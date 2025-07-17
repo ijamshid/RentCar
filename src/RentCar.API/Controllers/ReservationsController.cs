@@ -10,7 +10,7 @@ namespace RentCar.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]  // Foydalanuvchi autentifikatsiyadan o‘tgan bo‘lishi shart
+    [Authorize]  // Foydalanuvchi autentifikatsiyadan o‘tgan bo‘lishi shart
     public class ReservationsController : ControllerBase
     {
         private readonly IReservationService _reservationService;
@@ -20,7 +20,7 @@ namespace RentCar.API.Controllers
             _reservationService = reservationService;
         }
 
-        //[Authorize(Policy = nameof(ApplicationPermissionCode.CreateReservation))]
+        [Authorize(Policy = nameof(ApplicationPermissionCode.CreateReservation))]
         // POST: api/reservations
         [HttpPost]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationCreateDto dto)
@@ -32,10 +32,26 @@ namespace RentCar.API.Controllers
             if (userId == null)
                 return Unauthorized();
 
-            var createdReservation = await _reservationService.CreateReservationAsync(dto, userId);
-            return CreatedAtAction(nameof(GetReservationById), new { id = createdReservation.Id }, createdReservation);
+            try
+            {
+                var createdReservation = await _reservationService.CreateReservationAsync(dto, userId);
+                return CreatedAtAction(nameof(GetReservationById), new { id = createdReservation.Id }, createdReservation);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
-        
+
+
         [Authorize(Policy = nameof(ApplicationPermissionCode.UpdateReservation))]
         // POST: api/reservations
         [HttpPut]

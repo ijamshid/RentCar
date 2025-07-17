@@ -22,9 +22,10 @@ public class JwtTokenHandler : IJwtTokenHandler
     {
         var claims = new List<Claim>
         {
-            new Claim(CustomClaimNames.Id, user.Id.ToString()),
-            new Claim(CustomClaimNames.Email, user.Email),
-            new Claim(CustomClaimNames.Token, token)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim("token", token) // optional
+
         };
 
         // Role va Permission'larni claimga qo‘shish
@@ -74,3 +75,4 @@ public class JwtTokenHandler : IJwtTokenHandler
         return Convert.ToBase64String(bytes);
     }
 }
+

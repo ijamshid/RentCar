@@ -41,7 +41,6 @@ public class ReservationConfiguration : IEntityTypeConfiguration<Reservation>
         builder.HasOne(r => r.Payment)
             .WithOne(p => p.Reservation)
             .HasForeignKey<Payment>(p => p.ReservationId) // Payment's FK points to Reservation's PK
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Restrict); // Prevent deleting reservation if payment exists
+            .IsRequired();// Prevent deleting reservation if payment exists
     }
 }

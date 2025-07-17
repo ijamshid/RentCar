@@ -35,7 +35,7 @@ public class RabbitMQConsumer : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(2000, stoppingToken); // Application ishga tushishi uchun kutamiz
+        await Task.Delay(20000, stoppingToken); // Application ishga tushishi uchun kutamiz
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -46,7 +46,7 @@ public class RabbitMQConsumer : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "RabbitMQ Consumer xatolik: {Message}", ex.Message);
-                await Task.Delay(5000, stoppingToken); // 5 soniya kutib qaytadan urinib ko'ramiz
+                await Task.Delay(50000, stoppingToken); // 5 soniya kutib qaytadan urinib ko'ramiz
             }
         }
     }
@@ -96,8 +96,8 @@ public class RabbitMQConsumer : BackgroundService
                     {
                         ProductName = orderDto.ProductName
                     };
-                    _logger.LogInformation("Xabar qayta ishlanishidan oldin 5 soniya kutilmoqda...");
-                    await Task.Delay(5000);
+                    _logger.LogInformation("Xabar qayta ishlanishidan oldin 50 soniya kutilmoqda...");
+                    await Task.Delay(50000);
                     // Endi bu newOrder ning Id si default qiymatda (0) bo'ladi
                     // Baza uni avtomatik ravishda generatsiya qiladi
                     db.Orders.Add(newOrder);

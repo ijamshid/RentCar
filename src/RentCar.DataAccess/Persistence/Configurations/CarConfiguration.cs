@@ -50,12 +50,12 @@ namespace RentCar.DataAccess.Persistence.Configurations
             builder.HasOne(c => c.Brand)
                 .WithMany(b => b.Cars)
                 .HasForeignKey(c => c.BrandId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(c => c.Reservations)
                 .WithOne(r => r.Car)
                 .HasForeignKey(r => r.CarId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting a car if reservations exist
+                .OnDelete(DeleteBehavior.Cascade); // Prevent deleting a car if reservations exist
 
             builder.HasMany(c => c.Ratings)
                 .WithOne(r => r.Car)

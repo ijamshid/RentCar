@@ -25,7 +25,7 @@ namespace RentCar.DataAccess.Persistence.Configurations
             builder.HasMany(b => b.Cars)
                 .WithOne(c => c.Brand)
                 .HasForeignKey(c => c.BrandId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting a brand if cars are associated
+                .OnDelete(DeleteBehavior.Cascade); // Prevent deleting a brand if cars are associated
         }
     }
 }

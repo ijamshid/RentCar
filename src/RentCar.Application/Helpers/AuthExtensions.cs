@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RentCar.Application.Helpers.GenerateJWT;
+using System.Security.Claims;
 using System.Text;
 
 namespace RentCar.Application.Helpers
@@ -35,6 +36,8 @@ namespace RentCar.Application.Helpers
                        ClockSkew = TimeSpan.Zero,
                        ValidIssuer = jwtOptions.Issuer,
                        ValidAudience = jwtOptions.Audience,
+                       RoleClaimType = ClaimTypes.Role, // BU JUDA MUHIM!
+
                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
                    };
                });

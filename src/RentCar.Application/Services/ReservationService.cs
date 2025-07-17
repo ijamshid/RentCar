@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using RentCar.Application.Models.Car;
@@ -102,7 +103,8 @@ namespace RentCar.Application.Services
                     Status = PaymentStatus.Pending,
                     PaymentMethod = PaymentMethod.Cash,
                     TransactionId = Guid.NewGuid().ToString(),
-                    PaymentDate = DateTime.UtcNow
+                    PaymentDate = DateTime.UtcNow,
+                    UserId=userIdInt
                 }
             };
 

@@ -36,12 +36,12 @@ namespace RentCar.DataAccess.Persistence.Configurations;
         builder.HasMany(u => u.Reservations)
                 .WithOne(r => r.User)
                 .HasForeignKey(r => r.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting user if active reservations exist
+                .OnDelete(DeleteBehavior.Cascade); // Prevent deleting user if active reservations exist
 
             builder.HasMany(u => u.Payments)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting user if payments exist
+                .OnDelete(DeleteBehavior.Cascade); // Prevent deleting user if payments exist
 
             builder.HasMany(u => u.Ratings)
                 .WithOne(r => r.User)

@@ -20,7 +20,7 @@ namespace RentCar.DataAccess.Persistence.Configurations
             builder.HasOne(rp => rp.Permission)
                 .WithMany(p => p.RolePermissions)
                 .HasForeignKey(rp => rp.PermissionId)
-                .OnDelete(DeleteBehavior.Restrict); // Keep permissions if role is deleted, as permissions are independent
+                .OnDelete(DeleteBehavior.Cascade); // Keep permissions if role is deleted, as permissions are independent
         }
     }
 }

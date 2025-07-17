@@ -155,9 +155,9 @@ app.UseSwaggerUI();
 
 app.UseCors("AllowAllOrigins");
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<GlobalExceptionMiddleware>();
 app.UseRateLimiter();
 
 app.MapControllers();

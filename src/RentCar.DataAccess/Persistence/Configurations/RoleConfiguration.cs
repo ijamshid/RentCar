@@ -26,7 +26,7 @@ namespace RentCar.DataAccess.Persistence.Configurations
             builder.HasMany(r => r.UserRoles)
                 .WithOne(ur => ur.Role)
                 .HasForeignKey(ur => ur.RoleId)
-                .OnDelete(DeleteBehavior.Restrict); // Prevent deleting role if users are assigned to it
+                .OnDelete(DeleteBehavior.Cascade); // Prevent deleting role if users are assigned to it
 
             builder.HasMany(r => r.RolePermissions)
                 .WithOne(rp => rp.Role)

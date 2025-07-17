@@ -37,12 +37,12 @@ namespace RentCar.DataAccess.Persistence.Configurations
             builder.HasOne(p => p.PermissionGroup)
                 .WithMany(pg => pg.Permissions)
                 .HasForeignKey(p => p.PermissionGroupId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(p => p.RolePermissions)
                 .WithOne(rp => rp.Permission)
                 .HasForeignKey(rp => rp.PermissionId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
