@@ -18,6 +18,6 @@ namespace RentCar.Core.Entities
 
         public PermissionGroup PermissionGroup { get; set; } = null!;
 
-        public ICollection<RolePermission> RolePermissions { get; set; }
+        public ICollection<RolePermission> RolePermissions { get; set; } = null!;
     }
 }

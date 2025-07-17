@@ -7,6 +7,7 @@ using RentCar.Application.Security;
 using RentCar.Application.Services.Interfaces;
 using RentCar.Core.Entities;
 using RentCar.DataAccess.Persistence;
+using System.Security.Claims;
 
 namespace RentCar.Application.Services.Impl;
 
@@ -185,36 +186,36 @@ public class AuthService : IAuthService
     {
         get
         {
-            // Agar _user allaqachon yuklangan bo'lsa, uni qaytar.
             if (_user != null)
             {
                 return _user;
             }
 
             var httpContext = _httpContextAccessor.HttpContext;
-            // Agar HTTP konteksti va foydalanuvchi identiteti mavjud bo'lsa va autentifikatsiya qilingan bo'lsa
             if (httpContext?.User?.Identity != null && httpContext.User.Identity.IsAuthenticated)
             {
-                var userIdClaim = httpContext.User.FindFirst(CustomClaimNames.Id);
+                var userIdClaim = httpContext.User.FindFirst(ClaimTypes.NameIdentifier);
 
                 if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
                 {
-                    _user = _context.Set<User>().AsQueryable().Select(a => new UserAuthModel
-                    {
-                        Id = a.Id,
-                        FullName = a.Firstname + " " + a.Lastname, // Entity'dagi 'Fullname' property'sini ishlatamiz
-                        IsVerified = a.IsVerified, // IsVerified ni yuklaymiz
-                        // Foydalanuvchining rollari orqali ularga berilgan barcha ruxsatlarni olamiz
-                        Permissions = a.UserRoles
-                                         .SelectMany(ur => ur.Role.RolePermissions) // UserRole -> Role -> RolePermission
-                                         .Select(rp => rp.Permission.ShortName)     // RolePermission -> Permission -> ShortName
-                                         .Distinct() // Takrorlanuvchi ruxsat nomlarini olib tashlaymiz
-                                         .ToHashSet(),
-                    }).FirstOrDefault(a => a.Id == userId);
+                    _user = _context.Set<User>().AsQueryable()
+                        .Where(a => a.Id == userId)
+                        .Select(a => new UserAuthModel
+                        {
+                            Id = a.Id,
+                            FullName = a.Firstname + " " + a.Lastname,
+                            IsVerified = a.IsVerified,
+                            Permissions = a.UserRoles
+                                .SelectMany(ur => ur.Role.RolePermissions)
+                                .Select(rp => rp.Permission.ShortName)
+                                .Distinct()
+                                .ToHashSet(),
+                        })
+                        .FirstOrDefault();
                 }
             }
 
-            return _user; // Yuklangan _user'ni qaytaradi (autentifikatsiya qilinmagan bo'lsa yoki topilmasa null bo'ladi)
+            return _user;
         }
     }
 
