@@ -10,5 +10,6 @@ namespace RentCar.Application.Services.Interfaces
         Task CreateAsync(CarCreateDto dto);
         void Update(CarUpdateDto dto);
         void Delete(int id);
+        public Task DeleteCarPhotoAsync(int carId, string objectName);
     }
 }

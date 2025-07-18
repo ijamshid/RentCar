@@ -161,7 +161,7 @@ namespace RentCar.Application.Services
 
             var car = await _context.Cars
                 .Include(c => c.Brand)
-                .Include(a=>a.Photos)
+                .Include(a => a.Photos)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (car == null)
@@ -170,7 +170,7 @@ namespace RentCar.Application.Services
             var result = _mapper.Map<CarGetDto>(car);
 
             result.ImageGuids = car.Photos?
-                    .Select(p => p.ObjectName) 
+                    .Select(p => p.ObjectName)
                     .ToList();
 
             var cacheOptions = new MemoryCacheEntryOptions()
@@ -193,6 +193,34 @@ namespace RentCar.Application.Services
 
             _cache.Remove("cars");
             _cache.Remove($"car_{dto.Id}");
+        }
+
+        public async Task DeleteCarPhotoAsync(int carId, string objectName)
+        {
+            string bucket = "car-photos";
+
+            var car = await _context.Cars
+                .Include(c => c.Photos)
+                .FirstOrDefaultAsync(c => c.Id == carId);
+
+            if (car == null)
+            {
+                throw new KeyNotFoundException($"Car with ID {carId} not found.");
+            }
+
+            var photo = car.Photos.FirstOrDefault(p => p.ObjectName == objectName);
+            if (photo == null)
+            {
+                throw new KeyNotFoundException($"Photo with object name '{objectName}' not found for car ID {carId}.");
+            }
+
+            await _storageService.RemoveFileAsync(bucket, objectName);
+
+            _context.CarPhotos.Remove(photo);
+            await _context.SaveChangesAsync();
+
+            _cache.Remove($"car_{carId}"); // Invalidate cache for the specific car
+            _cache.Remove("cars"); // Invalidate cache for all cars
         }
     }
 }

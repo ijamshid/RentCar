@@ -12,8 +12,6 @@ namespace RentCar.API.Controllers
     [ApiController]
     public class CarsController(ICarService carService, IFileStorageService storageService) : ControllerBase
     {
-       
-
         [Authorize(Policy = nameof(ApplicationPermissionCode.GetCar))]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
@@ -47,6 +45,14 @@ namespace RentCar.API.Controllers
                 return NotFound();
 
             return File(stream, "application/octet-stream", objectName);
+        }
+
+        [HttpDelete("{carId}/photos/{objectName}")]
+        public async Task<IActionResult> DeletePhoto([FromRoute] int carId, [FromRoute] string objectName)
+        {
+            await carService.DeleteCarPhotoAsync(carId, objectName);
+            
+            return NoContent();
         }
 
         [Authorize(Policy = nameof(ApplicationPermissionCode.CreateCar))]
