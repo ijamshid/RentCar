@@ -13,8 +13,10 @@ using RentCar.Application.Helpers.GenerateJWT;
 using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services;
 using RentCar.DataAccess;
+using RentCar.DataAccess.Persistence;
 using System.Threading.RateLimiting;
 var builder = WebApplication.CreateBuilder(args);
+
 //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 //builder.WebHost.UseUrls($"http://*:{port}");
 
@@ -137,18 +139,19 @@ builder.Services.AddCors(options =>
   //builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
 var app = builder.Build();
 // Migratsiya
-//using (var scope = app.Services.CreateScope())
-//{
-//    try
-//    {
-//        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-//        await context.Database.MigrateAsync();
-//    }
-//    catch (Exception ex)
-//    {
-//        app.Logger.LogError(ex, "Migration failed.");
-//    }
-//}
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+        await AutomatedMigration.MigrateAsync(scope.ServiceProvider);
+
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Migration failed.");
+    }
+}
 
 
 app.UseSwagger();

@@ -37,8 +37,8 @@ public class AuthService : IAuthService
 
     public async Task<ApiResult<string>> RegisterAsync(RegisterUserModel model)
     {
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
-        if (existingUser != null)
+        var existingUser = await _context.Users.AnyAsync(e => e.Email == model.Email);
+        if (existingUser)
             return ApiResult<string>.Failure(new[] { "Email allaqachon mavjud" });
 
         var salt = Guid.NewGuid().ToString();
@@ -61,7 +61,7 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
 
         // --- Rolni isAdminSite ga qarab belgilash ---
-        string roleName = (user.Id<=1)  ? "Admin" : "User";
+        string roleName =  "User";
         var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
 
         if (defaultRole == null)
@@ -79,7 +79,6 @@ public class AuthService : IAuthService
         // --- Rolni belgilash qismi tugadi ---
 
         var otp = await _otpService.GenerateOtpAsync(user.Email);
-        await _emailService.SendOtpAsync(model.Email, otp);
 
         return ApiResult<string>.Success("Ro'yxatdan o'tdingiz. Emailingizni tasdiqlang.");
     }
