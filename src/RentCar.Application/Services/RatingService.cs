@@ -61,15 +61,25 @@ namespace RentCar.Application.Services
             return result;
         }
 
-        public async Task<RatingGetDto> CreateAsync(RatingCreateDto dto)
+        public async Task<RatingGetDto> CreateAsync(RatingCreateDto dto, string id)
         {
-            var rating = _mapper.Map<Rating>(dto);
-            _context.Ratings.Add(rating);
+            var reservation = await _context.Reservations
+                .Include(r => r.Car)
+                .FirstOrDefaultAsync(r => r.Id == dto.ReservationId);
+            var rate = new Rating
+            {
+                CreatedAt = DateTime.UtcNow,
+                UserId = int.Parse(id),
+                CarId = reservation.CarId,
+                Comment=dto.Comment,
+                Stars=dto.Value
+            };
+            _context.Ratings.Add(rate);
             await _context.SaveChangesAsync();
 
             _cache.Remove("ratings");
 
-            return _mapper.Map<RatingGetDto>(rating);
+            return _mapper.Map<RatingGetDto>(rate);
         }
 
         public async Task<bool> UpdateAsync(RatingUpdateDto dto)

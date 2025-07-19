@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.Models.Rating;
 using RentCar.Application.Security.AuthEnums;
 using RentCar.Application.Services.Interfaces;
+using System.Security.Claims;
 
 namespace RentCar.API.Controllers
 {
@@ -45,8 +46,10 @@ namespace RentCar.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            var userId = GetUserId();
 
-            var createdRating = await _ratingService.CreateAsync(dto);
+
+            var createdRating = await _ratingService.CreateAsync(dto, userId);
             return CreatedAtAction(nameof(GetById), new { id = createdRating.Id }, createdRating);
         }
 
@@ -77,7 +80,11 @@ namespace RentCar.API.Controllers
             return NoContent();
         }
 
-      
+        // Token ichidan userId olish uchun yordamchi metod
+        private string? GetUserId()
+        {
+            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
 
     }
 }
