@@ -23,13 +23,14 @@ public class EmailService : IEmailService
             using var client = new SmtpClient(_config.SmtpServer, _config.Port)
             {
                 EnableSsl = _config.EnableSsl,
+                UseDefaultCredentials = false,   // Bu muhim!
                 Credentials = new NetworkCredential(_config.Username, _config.Password)
             };
 
             var message = new MailMessage
             {
                 From = new MailAddress(_config.DefaultFromEmail, _config.DefaultFromName),
-                Subject = "SecureLoginApp: OTP Verification Code",
+                Subject = "RentCar: OTP Verification Code",
                 Body = GenerateBody(otp),
                 IsBodyHtml = true
             };
@@ -64,12 +65,12 @@ public class EmailService : IEmailService
     {
         var sb = new StringBuilder();
         sb.AppendLine("<html><body style='font-family:sans-serif;'>");
-        sb.AppendLine("<h3>Welcome to SecureLoginApp!</h3>");
+        sb.AppendLine("<h3>Welcome to RentCar!</h3>");
         sb.AppendLine("<p>Your one-time verification code is:</p>");
         sb.AppendLine($"<div style='font-size: 24px; font-weight: bold; margin: 20px 0;'>{otp}</div>");
         sb.AppendLine("<p>Please do not share this code with anyone. It will expire in 5 minutes.</p>");
         sb.AppendLine("<p>If you did not request this, please ignore.</p>");
-        sb.AppendLine("<br/><small>&copy; 2025 SecureLoginApp</small>");
+        sb.AppendLine("<br/><small>&copy; 2025 RentCar</small>");
         sb.AppendLine("</body></html>");
         return sb.ToString();
     }
