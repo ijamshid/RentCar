@@ -61,9 +61,13 @@ namespace RentCar.Application.Services
             return result;
         }
 
-        public async Task<RatingGetDto> CreateAsync(RatingCreateDto dto)
+        public async Task<RatingGetDto> CreateAsync(RatingCreateDto dto, string userId)
         {
+            if (!int.TryParse(userId, out int userIdInt))
+                throw new UnauthorizedAccessException("Invalid user ID.");
+
             var rating = _mapper.Map<Rating>(dto);
+            rating.UserId = userIdInt;
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 

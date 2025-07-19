@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using RentCar.Application.Models.Rating;
 using RentCar.Application.Security.AuthEnums;
+using RentCar.Application.Services;
 using RentCar.Application.Services.Interfaces;
+using System.Security.Claims;
 
 namespace RentCar.API.Controllers
 {
@@ -46,8 +48,28 @@ namespace RentCar.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var createdRating = await _ratingService.CreateAsync(dto);
-            return CreatedAtAction(nameof(GetById), new { id = createdRating.Id }, createdRating);
+
+            var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            try
+            {
+                var createdRating = await _ratingService.CreateAsync(dto, userId);
+                return CreatedAtAction(nameof(GetById), new { id = createdRating.Id }, createdRating);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         [Authorize(Policy = nameof(ApplicationPermissionCode.UpdateRating))]
@@ -77,7 +99,10 @@ namespace RentCar.API.Controllers
             return NoContent();
         }
 
-      
+        private string? GetUserId()
+        {
+            return User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
 
     }
 }

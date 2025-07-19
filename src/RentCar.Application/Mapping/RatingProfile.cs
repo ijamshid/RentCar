@@ -11,6 +11,7 @@ namespace RentCar.Application.Mapping
         {
             CreateMap<Rating, RatingGetDto>();
             CreateMap<RatingCreateDto, Rating>()
+                .ForMember(dest => dest.Stars, opt => opt.MapFrom(src => src.Value))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
 
             CreateMap<RatingUpdateDto, Rating>()

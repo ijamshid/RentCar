@@ -73,7 +73,6 @@ namespace RentCar.Application.Services
 
         public async Task<ReservationGetDto> CreateReservationAsync(ReservationCreateDto dto, string userId)
         {
-            // userId ni int ga xavfsiz o‘tkazish
             if (!int.TryParse(userId, out int userIdInt))
                 throw new UnauthorizedAccessException("Invalid user ID.");
 
@@ -87,7 +86,6 @@ namespace RentCar.Application.Services
 
             var total = days * car.DailyPrice;
 
-            // Endi yangi Reservation entity yaratamiz
             var reservation = new Reservation
             {
                 UserId = userIdInt,
