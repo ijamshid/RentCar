@@ -1,5 +1,4 @@
-﻿
-namespace RentCar.Application.Security.AuthEnums;
+﻿namespace RentCar.Application.Security.AuthEnums;
 
 [ApplicationEnumDescription]
 public enum ApplicationPermissionCode
@@ -9,101 +8,130 @@ public enum ApplicationPermissionCode
     #region User
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "User Create")]
-    UserCreate,
+    UserCreate = 1,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "Add Admin")]
-    AddAdmin,
+    AddAdmin = 32,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "User Read")]
-    UserRead,
+    UserRead = 2,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "User Update")]
-    UserUpdate,
+    UserUpdate = 3,
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.User, "User Delete")]
-    UserDelete,
+    UserDelete = 4,
 
     #endregion
 
     #region Permission
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Permission, "Get Permissions")]
-    GetPermissions,
+    GetPermissions = 31,
 
     #endregion
+
     #region Role
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Role, "Get Role")]
-    GetRole,
+    GetRole = 5,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Role, "Create Role")]
-    CreateRole,
+    CreateRole = 6,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Role, "Update Role")]
-    UpdateRole,
+    UpdateRole = 7,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Role, "Delete Role")]
-    DeleteRole,
+    DeleteRole = 8,
 
     #endregion
+
     #region Car
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Car, "Get Car")]
-    GetCar,
+    GetCar = 9,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Car, "Create Car")]
-    CreateCar,
+    CreateCar = 10,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Car, "Update Car")]
-    UpdateCar,
+    UpdateCar = 11,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Car, "Delete Car")]
-    DeleteCar,
+    DeleteCar = 12,
 
     #endregion
+
     #region Brand
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Brand, "Get Brand")]
-    GetBrand,
+    GetBrand = 13,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Brand, "Create Brand")]
-    CreateBrand,
+    CreateBrand = 14,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Brand, "Update Brand")]
-    UpdateBrand,
+    UpdateBrand = 15,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Brand, "Delete Brand")]
-    DeleteBrand,
+    DeleteBrand = 16,
 
     #endregion
+
     #region Reservation
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Get Reservation")]
-    GetReservation,
+    GetReservation = 17,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Create Reservation")]
-    CreateReservation,
+    CreateReservation = 18,
+
+    [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Confirm Reservation")]
+    ConfirmReservation = 19,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Cancel Reservation")]
-    CancelReservation,
+    CancelReservation = 20,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Update Reservation")]
-    UpdateReservation,
+    UpdateReservation = 21,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Reservation, "Delete Reservation")]
-    DeleteReservation,
+    DeleteReservation = 22,
 
     #endregion
 
     #region Rating
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Rating, "Get Rating")]
-    GetRating,
+    GetRating = 23,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Rating, "Create Rating")]
-    CreateRating,
+    CreateRating = 24,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Rating, "Update Rating")]
-    UpdateRating,
+    UpdateRating = 25,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Rating, "Delete Rating")]
-    DeleteRating,
+    DeleteRating = 26,
 
     #endregion
+
     #region Photo
 
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Photo, "Get Photo")]
-    GetPhoto,
+    GetPhoto = 27,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Photo, "Create Photo")]
-    CreatePhoto,
+    CreatePhoto = 28,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Photo, "Update Photo")]
-    UpdatePhoto,
+    UpdatePhoto = 29,
+
     [ApplicationPermissionDescription(ApplicationPermissionGroupCode.Photo, "Delete Photo")]
-    DeletePhoto,
+    DeletePhoto = 30,
 
     #endregion
-
 
     #endregion
 }

@@ -12,8 +12,8 @@ using RentCar.DataAccess.Persistence;
 namespace RentCar.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20250717132442_addd")]
-    partial class addd
+    [Migration("20250719190012_migd")]
+    partial class migd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,51 +40,9 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnName("name");
 
                     b.HasKey("Id")
-                        .HasName("pk_permission_group");
+                        .HasName("pk_permission_groups");
 
-                    b.ToTable("permission_group", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "User Management"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Role Management"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Car Management"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Brand Management"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Reservation Management"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Rating Management"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Photo Management"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Permission Management"
-                        });
+                    b.ToTable("permission_groups", (string)null);
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Brand", b =>
@@ -367,296 +325,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_permissions_permission_group_id");
 
                     b.ToTable("permissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "User Create",
-                            Name = "UserCreate",
-                            PermissionGroupId = 1,
-                            ShortName = "UserCreate"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "User Read",
-                            Name = "UserRead",
-                            PermissionGroupId = 1,
-                            ShortName = "UserRead"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "User Update",
-                            Name = "UserUpdate",
-                            PermissionGroupId = 1,
-                            ShortName = "UserUpdate"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "User Delete",
-                            Name = "UserDelete",
-                            PermissionGroupId = 1,
-                            ShortName = "UserDelete"
-                        },
-                        new
-                        {
-                            Id = 32,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Add Admin",
-                            Name = "AddAdmin",
-                            PermissionGroupId = 1,
-                            ShortName = "AA"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Get Role",
-                            Name = "GetRole",
-                            PermissionGroupId = 2,
-                            ShortName = "GetRole"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Create Role",
-                            Name = "CreateRole",
-                            PermissionGroupId = 2,
-                            ShortName = "CreateRole"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Update Role",
-                            Name = "UpdateRole",
-                            PermissionGroupId = 2,
-                            ShortName = "UpdateRole"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Delete Role",
-                            Name = "DeleteRole",
-                            PermissionGroupId = 2,
-                            ShortName = "DeleteRole"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Get Car",
-                            Name = "GetCar",
-                            PermissionGroupId = 3,
-                            ShortName = "GetCar"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Create Car",
-                            Name = "CreateCar",
-                            PermissionGroupId = 3,
-                            ShortName = "CreateCar"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Update Car",
-                            Name = "UpdateCar",
-                            PermissionGroupId = 3,
-                            ShortName = "UpdateCar"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Delete Car",
-                            Name = "DeleteCar",
-                            PermissionGroupId = 3,
-                            ShortName = "DeleteCar"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Get Brand",
-                            Name = "GetBrand",
-                            PermissionGroupId = 4,
-                            ShortName = "GetBrand"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Create Brand",
-                            Name = "CreateBrand",
-                            PermissionGroupId = 4,
-                            ShortName = "CreateBrand"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Update Brand",
-                            Name = "UpdateBrand",
-                            PermissionGroupId = 4,
-                            ShortName = "UpdateBrand"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Delete Brand",
-                            Name = "DeleteBrand",
-                            PermissionGroupId = 4,
-                            ShortName = "DeleteBrand"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Get Reservation",
-                            Name = "GetReservation",
-                            PermissionGroupId = 5,
-                            ShortName = "GetReservation"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Create Reservation",
-                            Name = "CreateReservation",
-                            PermissionGroupId = 5,
-                            ShortName = "CreateReservation"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Confirm Reservation",
-                            Name = "ConfirmReservation",
-                            PermissionGroupId = 5,
-                            ShortName = "ConfirmReservation"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Cancel Reservation",
-                            Name = "CancelReservation",
-                            PermissionGroupId = 5,
-                            ShortName = "CancelReservation"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Update Reservation",
-                            Name = "UpdateReservation",
-                            PermissionGroupId = 5,
-                            ShortName = "UpdateReservation"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Delete Reservation",
-                            Name = "DeleteReservation",
-                            PermissionGroupId = 5,
-                            ShortName = "DeleteReservation"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Get Rating",
-                            Name = "GetRating",
-                            PermissionGroupId = 6,
-                            ShortName = "GetRating"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Create Rating",
-                            Name = "CreateRating",
-                            PermissionGroupId = 6,
-                            ShortName = "CreateRating"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Update Rating",
-                            Name = "UpdateRating",
-                            PermissionGroupId = 6,
-                            ShortName = "UpdateRating"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Delete Rating",
-                            Name = "DeleteRating",
-                            PermissionGroupId = 6,
-                            ShortName = "DeleteRating"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Get Photo",
-                            Name = "GetPhoto",
-                            PermissionGroupId = 7,
-                            ShortName = "GetPhoto"
-                        },
-                        new
-                        {
-                            Id = 28,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Create Photo",
-                            Name = "CreatePhoto",
-                            PermissionGroupId = 7,
-                            ShortName = "CreatePhoto"
-                        },
-                        new
-                        {
-                            Id = 29,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Update Photo",
-                            Name = "UpdatePhoto",
-                            PermissionGroupId = 7,
-                            ShortName = "UpdatePhoto"
-                        },
-                        new
-                        {
-                            Id = 30,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Delete Photo",
-                            Name = "DeletePhoto",
-                            PermissionGroupId = 7,
-                            ShortName = "DeletePhoto"
-                        },
-                        new
-                        {
-                            Id = 31,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Get Permissions",
-                            Name = "GetPermissions",
-                            PermissionGroupId = 8,
-                            ShortName = "GetPermissions"
-                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.Photo", b =>
@@ -843,22 +511,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_roles_name");
 
                     b.ToTable("roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Full system access",
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Description = "Standard customer role",
-                            Name = "User"
-                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.RolePermission", b =>
@@ -878,248 +530,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_role_permissions_permission_id");
 
                     b.ToTable("role_permissions", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 1
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 2
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 3
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 4
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 5
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 6
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 7
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 8
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 10
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 11
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 12
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 13
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 14
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 15
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 16
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 17
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 18
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 19
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 20
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 21
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 22
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 23
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 24
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 25
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 26
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 27
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 28
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 29
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 30
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 31
-                        },
-                        new
-                        {
-                            RoleId = 1,
-                            PermissionId = 32
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 5
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 9
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 13
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 17
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 18
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 20
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 21
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 22
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 23
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 24
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 25
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 26
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 27
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 28
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 29
-                        },
-                        new
-                        {
-                            RoleId = 2,
-                            PermissionId = 30
-                        });
                 });
 
             modelBuilder.Entity("RentCar.Core.Entities.User", b =>
@@ -1157,6 +567,10 @@ namespace RentCar.DataAccess.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
                         .HasColumnName("is_active");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_admin");
 
                     b.Property<bool>("IsVerified")
                         .HasColumnType("boolean")
@@ -1205,6 +619,7 @@ namespace RentCar.DataAccess.Migrations
                             Email = "ijamshid007@gmail.com",
                             Firstname = "Jamshid",
                             IsActive = true,
+                            IsAdmin = true,
                             IsVerified = true,
                             Lastname = "Ismoilov",
                             PasswordHash = "lhNexZJpra3Sx2B+cgdzO+mRDm2qjfLIENLuHdJQFk0=",
@@ -1230,13 +645,6 @@ namespace RentCar.DataAccess.Migrations
                         .HasDatabaseName("ix_user_roles_role_id");
 
                     b.ToTable("user_roles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            RoleId = 1
-                        });
                 });
 
             modelBuilder.Entity("SecureLoginApp.Core.Entities.UserOTPs", b =>
@@ -1324,7 +732,7 @@ namespace RentCar.DataAccess.Migrations
                         .HasForeignKey("PermissionGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_permissions_permission_group_permission_group_id");
+                        .HasConstraintName("fk_permissions_permission_groups_permission_group_id");
 
                     b.Navigation("PermissionGroup");
                 });

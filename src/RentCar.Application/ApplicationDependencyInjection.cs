@@ -7,6 +7,7 @@ using RentCar.Application.Helpers.PasswordHasher;
 using RentCar.Application.Helpers.PasswordHashers;
 using RentCar.Application.Services;
 using RentCar.Application.Services.Impl;
+using RentCar.Application.Services.Implementation;
 using RentCar.Application.Services.Interfaces;
 using SecureLoginApp.Application.Helpers.GenerateJwt;
 using SecureLoginApp.Application.Services.Impl;
@@ -30,6 +31,7 @@ namespace RentCar.Application
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IDataSeedService, DataSeedService>();
             services.AddScoped<IPhotoService, PhotoService>();
             services.AddScoped<IPermissionService, PermissionService>();
             //services.AddScoped<IFileStorageService, FileStorageService>();

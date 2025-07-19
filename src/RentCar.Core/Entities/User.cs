@@ -21,6 +21,7 @@ public class User : BaseEntity
     public ICollection<UserRole> UserRoles { get; set; }
     public DateTime? DateOfBirth { get; set; } // Nullable DateTime
     public DateTime CreatedAt { get; set; }
+    public bool IsAdmin { get; set; } = default;
 
 
 }

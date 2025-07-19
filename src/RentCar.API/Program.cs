@@ -138,6 +138,12 @@ builder.Services.AddCors(options =>
   //
   //builder.WebHost.UseUrls($"https://*:{builder.Configuration.GetValue<int>("Port")}");
 var app = builder.Build();
+//Seed roles and permissions on application startup
+using (var scope = app.Services.CreateScope())
+{
+    var dataSeedService = scope.ServiceProvider.GetRequiredService<IDataSeedService>();
+    await dataSeedService.SeedRolesAndPermissionsAsync();
+}
 // Migratsiya
 using (var scope = app.Services.CreateScope())
 {

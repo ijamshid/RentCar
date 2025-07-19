@@ -2,15 +2,14 @@
 {
     public enum ApplicationPermissionGroupCode
     {
-        User,
-        Role,
-        Permission,
-        Car,
-        Brand,
-        Reservation,
-        Rating,
-        Photo
-
-
+        User = 1,
+        Role = 2,
+        Permission = 3,
+        Car = 4,
+        Brand = 5,
+        Reservation = 6,
+        Rating = 7,
+        Photo = 8
     }
+
 }

@@ -4,12 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace RentCar.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class mig : Migration
+    public partial class migd : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,7 +42,7 @@ namespace RentCar.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "permission_group",
+                name: "permission_groups",
                 columns: table => new
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
@@ -53,7 +51,7 @@ namespace RentCar.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_permission_group", x => x.id);
+                    table.PrimaryKey("pk_permission_groups", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -103,7 +101,8 @@ namespace RentCar.DataAccess.Migrations
                     is_verified = table.Column<bool>(type: "boolean", nullable: false),
                     refresh_token = table.Column<string>(type: "text", nullable: true),
                     date_of_birth = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'")
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW() AT TIME ZONE 'UTC'"),
+                    is_admin = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -136,7 +135,7 @@ namespace RentCar.DataAccess.Migrations
                         column: x => x.brand_id,
                         principalTable: "brands",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -156,11 +155,11 @@ namespace RentCar.DataAccess.Migrations
                 {
                     table.PrimaryKey("pk_permissions", x => x.id);
                     table.ForeignKey(
-                        name: "fk_permissions_permission_group_permission_group_id",
+                        name: "fk_permissions_permission_groups_permission_group_id",
                         column: x => x.permission_group_id,
-                        principalTable: "permission_group",
+                        principalTable: "permission_groups",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,7 +177,7 @@ namespace RentCar.DataAccess.Migrations
                         column: x => x.role_id,
                         principalTable: "roles",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_user_roles_users_user_id",
                         column: x => x.user_id,
@@ -282,13 +281,13 @@ namespace RentCar.DataAccess.Migrations
                         column: x => x.car_id,
                         principalTable: "cars",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_reservations_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -306,7 +305,7 @@ namespace RentCar.DataAccess.Migrations
                         column: x => x.permission_id,
                         principalTable: "permissions",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_role_permissions_roles_role_id",
                         column: x => x.role_id,
@@ -337,142 +336,19 @@ namespace RentCar.DataAccess.Migrations
                         column: x => x.reservation_id,
                         principalTable: "reservations",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "fk_payments_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.InsertData(
-                table: "permission_group",
-                columns: new[] { "id", "name" },
-                values: new object[,]
-                {
-                    { 1, "User Management" },
-                    { 2, "Role Management" },
-                    { 3, "Car Management" },
-                    { 4, "Brand Management" },
-                    { 5, "Reservation Management" },
-                    { 6, "Rating Management" },
-                    { 7, "Photo Management" },
-                    { 8, "Permission Management" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "roles",
-                columns: new[] { "id", "description", "name" },
-                values: new object[,]
-                {
-                    { 1, "Full system access", "Admin" },
-                    { 2, "Standard customer role", "User" }
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
                 table: "users",
-                columns: new[] { "id", "created_at", "date_of_birth", "email", "firstname", "is_active", "is_verified", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
-                values: new object[] { 1, new DateTime(2025, 7, 15, 12, 0, 0, 0, DateTimeKind.Utc), new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), "ijamshid007@gmail.com", "Jamshid", true, true, "Ismoilov", "VgKxWUJru2AunVaMv7+HxScmDjCAVJLLWtvOb6iOkNY=", "944225302", null, "a5a482f3-8c19-4a2d-84be-0fcbecb8d1ba" });
-
-            migrationBuilder.InsertData(
-                table: "permissions",
-                columns: new[] { "id", "description", "name", "permission_group_id", "short_name" },
-                values: new object[,]
-                {
-                    { 1, "User Create", "UserCreate", 1, "UserCreate" },
-                    { 2, "User Read", "UserRead", 1, "UserRead" },
-                    { 3, "User Update", "UserUpdate", 1, "UserUpdate" },
-                    { 4, "User Delete", "UserDelete", 1, "UserDelete" },
-                    { 5, "Get Role", "GetRole", 2, "GetRole" },
-                    { 6, "Create Role", "CreateRole", 2, "CreateRole" },
-                    { 7, "Update Role", "UpdateRole", 2, "UpdateRole" },
-                    { 8, "Delete Role", "DeleteRole", 2, "DeleteRole" },
-                    { 9, "Get Car", "GetCar", 3, "GetCar" },
-                    { 10, "Create Car", "CreateCar", 3, "CreateCar" },
-                    { 11, "Update Car", "UpdateCar", 3, "UpdateCar" },
-                    { 12, "Delete Car", "DeleteCar", 3, "DeleteCar" },
-                    { 13, "Get Brand", "GetBrand", 4, "GetBrand" },
-                    { 14, "Create Brand", "CreateBrand", 4, "CreateBrand" },
-                    { 15, "Update Brand", "UpdateBrand", 4, "UpdateBrand" },
-                    { 16, "Delete Brand", "DeleteBrand", 4, "DeleteBrand" },
-                    { 17, "Get Reservation", "GetReservation", 5, "GetReservation" },
-                    { 18, "Create Reservation", "CreateReservation", 5, "CreateReservation" },
-                    { 19, "Confirm Reservation", "ConfirmReservation", 5, "ConfirmReservation" },
-                    { 20, "Cancel Reservation", "CancelReservation", 5, "CancelReservation" },
-                    { 21, "Update Reservation", "UpdateReservation", 5, "UpdateReservation" },
-                    { 22, "Delete Reservation", "DeleteReservation", 5, "DeleteReservation" },
-                    { 23, "Get Rating", "GetRating", 6, "GetRating" },
-                    { 24, "Create Rating", "CreateRating", 6, "CreateRating" },
-                    { 25, "Update Rating", "UpdateRating", 6, "UpdateRating" },
-                    { 26, "Delete Rating", "DeleteRating", 6, "DeleteRating" },
-                    { 27, "Get Photo", "GetPhoto", 7, "GetPhoto" },
-                    { 28, "Create Photo", "CreatePhoto", 7, "CreatePhoto" },
-                    { 29, "Update Photo", "UpdatePhoto", 7, "UpdatePhoto" },
-                    { 30, "Delete Photo", "DeletePhoto", 7, "DeletePhoto" },
-                    { 31, "Get Permissions", "GetPermissions", 8, "GetPermissions" },
-                    { 32, "Add Admin", "AddAdmin", 1, "AA" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "user_roles",
-                columns: new[] { "role_id", "user_id" },
-                values: new object[] { 1, 1 });
-
-            migrationBuilder.InsertData(
-                table: "role_permissions",
-                columns: new[] { "permission_id", "role_id" },
-                values: new object[,]
-                {
-                    { 1, 1 },
-                    { 2, 1 },
-                    { 3, 1 },
-                    { 4, 1 },
-                    { 5, 1 },
-                    { 6, 1 },
-                    { 7, 1 },
-                    { 8, 1 },
-                    { 9, 1 },
-                    { 10, 1 },
-                    { 11, 1 },
-                    { 12, 1 },
-                    { 13, 1 },
-                    { 14, 1 },
-                    { 15, 1 },
-                    { 16, 1 },
-                    { 17, 1 },
-                    { 18, 1 },
-                    { 19, 1 },
-                    { 20, 1 },
-                    { 21, 1 },
-                    { 22, 1 },
-                    { 23, 1 },
-                    { 24, 1 },
-                    { 25, 1 },
-                    { 26, 1 },
-                    { 27, 1 },
-                    { 28, 1 },
-                    { 29, 1 },
-                    { 30, 1 },
-                    { 31, 1 },
-                    { 32, 1 },
-                    { 5, 2 },
-                    { 9, 2 },
-                    { 13, 2 },
-                    { 17, 2 },
-                    { 18, 2 },
-                    { 20, 2 },
-                    { 21, 2 },
-                    { 22, 2 },
-                    { 23, 2 },
-                    { 24, 2 },
-                    { 25, 2 },
-                    { 26, 2 },
-                    { 27, 2 },
-                    { 28, 2 },
-                    { 29, 2 },
-                    { 30, 2 }
-                });
+                columns: new[] { "id", "created_at", "date_of_birth", "email", "firstname", "is_active", "is_admin", "is_verified", "lastname", "password_hash", "phone_number", "refresh_token", "salt" },
+                values: new object[] { 1, new DateTime(2025, 7, 15, 12, 0, 0, 0, DateTimeKind.Utc), new DateTime(1980, 1, 1, 12, 0, 0, 0, DateTimeKind.Utc), "ijamshid007@gmail.com", "Jamshid", true, true, true, "Ismoilov", "lhNexZJpra3Sx2B+cgdzO+mRDm2qjfLIENLuHdJQFk0=", "944225302", null, "a5a482f3-8c19-4a2d-84be-0fcbecb8d1ba" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_brands_name",
@@ -616,7 +492,7 @@ namespace RentCar.DataAccess.Migrations
                 name: "users");
 
             migrationBuilder.DropTable(
-                name: "permission_group");
+                name: "permission_groups");
 
             migrationBuilder.DropTable(
                 name: "brands");
