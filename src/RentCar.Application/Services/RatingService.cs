@@ -65,9 +65,13 @@ namespace RentCar.Application.Services
         {
             if (!int.TryParse(userId, out int userIdInt))
                 throw new UnauthorizedAccessException("Invalid user ID.");
+            var car = await    _context.Ratings.Include(a => a.Car).FirstOrDefaultAsync();
+            if (car == null)
+                throw new ArgumentException($"Rezervatsiya ID {dto.ReservationId} topilmadi.");
 
             var rating = _mapper.Map<Rating>(dto);
             rating.UserId = userIdInt;
+            rating.CarId = car.Car.Id;
             _context.Ratings.Add(rating);
             await _context.SaveChangesAsync();
 
